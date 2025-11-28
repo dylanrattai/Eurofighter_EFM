@@ -4,6 +4,7 @@
 #include "Input.h"
 #include "Airframe.h"
 #include "BaseComponent.h"
+#include "Pid.h"
 
 class Flight_Control_System
 {

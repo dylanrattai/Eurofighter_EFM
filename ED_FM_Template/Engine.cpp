@@ -466,7 +466,7 @@ double Engine::updateSpool()
 	m_deltaSpoolABS = abs(m_deltaSpool);
 	//m_spoolFactor = EngDel(m_deltaSpoolABS);//die alte Idee mit der Alten "Table"
 	int indexInArray = m_deltaSpoolABS / 0.02; //hier wird der Index für den Array aus einer "double" in eine "int" umgemünzt, damit ganze Zahlen generiert werden// kein Factor, damit nicht außerhalb des Arrays verschoben wird
-	m_spoolFactor = (DAT_EngSpool[indexInArray]) / 4.0;//Variale indexInArray ergibt diejenige Zahl die dem Index in dem Array entspricht// /5 hinzugefügt, für langsameres Ansprechen testweise/ jetzt auf 6.0 erhöht/ auf 4.0 verringert, da kleinere Turbinen bei der G91Y
+	m_spoolFactor = (DAT_EngSpool[indexInArray]) / 10.0;//Variale indexInArray ergibt diejenige Zahl die dem Index in dem Array entspricht// /5 hinzugefügt, für langsameres Ansprechen testweise/ jetzt auf 6.0 erhöht/ auf 4.0 verringert, da kleinere Turbinen bei der G91Y
 	m_newSpoolStep = m_deltaSpool * m_spoolFactor;
 	m_newThrottle = m_oldThrottle + m_newSpoolStep;
 	
@@ -808,7 +808,7 @@ double Engine::updateSpool2()
 	m_deltaSpoolABS2 = abs(m_deltaSpool2);
 	//m_spoolFactor = EngDel(m_deltaSpoolABS);//die alte Idee mit der Alten "Table"
 	int indexInArray = m_deltaSpoolABS2 / 0.02; //hier wird der Index für den Array aus einer "double" in eine "int" umgemünzt, damit ganze Zahlen generiert werden// kein Factor, damit nicht außerhalb des Arrays verschoben wird
-	m_spoolFactor2 = (DAT_EngSpool[indexInArray]) / 4.0;//Variale indexInArray ergibt diejenige Zahl die dem Index in dem Array entspricht// /5 hinzugefügt, für langsameres Ansprechen testweise/ jetzt auf 6.0 erhöht
+	m_spoolFactor2 = (DAT_EngSpool[indexInArray]) / 10.0;//Variale indexInArray ergibt diejenige Zahl die dem Index in dem Array entspricht// /5 hinzugefügt, für langsameres Ansprechen testweise/ jetzt auf 6.0 erhöht
 	m_newSpoolStep2 = m_deltaSpool2 * m_spoolFactor2;
 	m_newThrottle2 = m_oldThrottle2 + m_newSpoolStep2;
 

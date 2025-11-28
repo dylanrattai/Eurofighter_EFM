@@ -1,0 +1,7 @@
+﻿C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(524,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
+     Creating library ..\..\bin\F-4E.lib and object ..\..\bin\F-4E.exp
+Airframe.obj : error LNK2019: unresolved external symbol __imp__CrtDbgReport referenced in function "void * __cdecl std::_Allocate_manually_vector_aligned<struct std::_Default_allocate_traits>(unsigned __int64)" (??$_Allocate_manually_vector_aligned@U_Default_allocate_traits@std@@@std@@YAPEAX_K@Z)
+ED_FM_Template.obj : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+Engine.obj : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+FlightModel.obj : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+..\..\bin\F-4E.dll : fatal error LNK1120: 1 unresolved externals

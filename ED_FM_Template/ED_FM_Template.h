@@ -1,5 +1,5 @@
 #include "ED_FM_TemplateAPI.h"
-#include "../../include/FM/wHumanCustomPhysicsAPI.h"
+#include "wHumanCustomPhysicsAPI.h"
 
 extern "C" 
 {
