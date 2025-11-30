@@ -4,7 +4,7 @@
 #include "Input.h"
 #include "Airframe.h"
 #include "BaseComponent.h"
-#include "Pid.h"
+//#include "Pid.h"
 
 class Flight_Control_System
 {
@@ -25,7 +25,9 @@ public:
     void refueling_limit();
     //void low_speed_recovery();
     void autoDriveCanardPosition();
-    void PID_controller(double target, double meassurement, double kp, double ki, double kd, double tau, double bias);
+    double PID_controller_pitch(double target, double meassurement, double kp, double ki, double kd, double tau, double bias);
+    double PID_controller_roll(double target, double meassurement, double kp, double ki, double kd, double tau, double bias);
+    double PID_controller_yaw(double target, double meassurement, double kp, double ki, double kd, double tau, double bias);
     //double Flight_Control_System::Canard_AOA();
     double const Flight_Control_System::getpitch() const
     {
@@ -56,6 +58,8 @@ private:
     Input& m_input;
     Airframe& m_airframe;
 
+    
+
     double DEG_TO_RAD = 3.14159265358979323846 / 180.0;
 
     double throttlecmd_1 = 0.0;
@@ -63,6 +67,7 @@ private:
     double throttlecmd_2 = 0.0;
     double throttle_cmd_filtered_2 = 0.0;
     double airspeed = 0.0;
+
     //bool wing_stall = false;
 
 	double previous_aoa = 0.0;
@@ -90,13 +95,32 @@ private:
     const double GROUND_AOA_MIN = -0.09;    // -5° in radians
     const double LANDING_AOA_LIMIT = 0.3142; // 18° in radians
     const double DEFAULT_AOA_LIMIT = 0.4189; // 24° in radians#
-    double meassurement_prior = 0.0;
-    double derivative_prior = 0.0;
-    double error_prior = 0.0;
-    double error = 0.0;
-    double PID_value_out = 0.0;
-    double integral_prior = 0.0;
 
+    //Pitch pid
+    double pitch_meassurement_prior = 0.0;
+    double pitch_derivative_prior = 0.0;
+    double pitch_error_prior = 0.0;
+    double pitch_error = 0.0;
+    double pitch_PID_value_out = 0.0;
+    double pitch_integral_prior = 0.0;
+
+    //Roll pid
+    double roll_meassurement_prior = 0.0;
+    double roll_derivative_prior = 0.0;
+    double roll_error_prior = 0.0;
+    double roll_error = 0.0;
+    double roll_PID_value_out = 0.0;
+    double roll_integral_prior = 0.0;
+
+    //Yaw pid
+    double yaw_meassurement_prior = 0.0;
+    double yaw_derivative_prior = 0.0;
+    double yaw_error_prior = 0.0;
+    double yaw_error = 0.0;
+    double yaw_PID_value_out = 0.0;
+    double yaw_integral_prior = 0.0;
+
+    //------------------------------------------
     double subsonic_FCS_mode = 0.0;
     double landing_FCS_mode = 0.0;
     double supersonic_FCS_mode = 0.0;

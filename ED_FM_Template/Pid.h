@@ -1,51 +1,50 @@
-#pragma once
+#include <iostream>
+#include <algorithm>  // for std::clamp
 
 class PID {
 public:
-    PID(double kp, double ki, double kd, double minOut, double maxOut)
-        : Kp(kp), Ki(ki), Kd(kd), minOutput(minOut), maxOutput(maxOut),
-        integral(0.0), prevError(0.0), firstRun(true) {
+    PID(double Kp, double Ki, double Kd,
+        double outputMin = -1e9, double outputMax = 1e9)
+        : Kp(Kp), Ki(Ki), Kd(Kd),
+        outputMin(outputMin), outputMax(outputMax) {
     }
 
-    double compute(double setpoint, double measured, double dt) {
-        double error = setpoint - measured;
+    double compute(double setpoint, double measurement, double dt) {
+
+        // Calculate error
+        double error = setpoint - measurement;
 
         // --- Proportional term ---
         double P = Kp * error;
 
-        // --- Integral term ---
+        // --- Integral term with clamping ---
         integral += error * dt;
-
-        // Anti-windup clamp
-        if (integral > maxOutput) integral = maxOutput;
-        if (integral < minOutput) integral = minOutput;
-
+        integral = clamp(integral, -1000.0, 1000.0); // anti-windup
         double I = Ki * integral;
 
         // --- Derivative term ---
-        double derivative = 0.0;
-        if (!firstRun)
-            derivative = (error - prevError) / dt;
-
+        double derivative = (error - previousError) / dt;
         double D = Kd * derivative;
 
-        prevError = error;
-        firstRun = false;
-
-        // Total output
+        // --- Total output ---
         double output = P + I + D;
+        output = clamp(output, outputMin, outputMax);
 
-        // Clamp final output
-        if (output > maxOutput) output = maxOutput;
-        if (output < minOutput) output = minOutput;
-
+        previousError = error;
         return output;
+    }
+
+    void reset()
+    {
+        integral = 0.0;
+        previousError = 0.0;
     }
 
 private:
     double Kp, Ki, Kd;
-    double minOutput, maxOutput;
-    double integral;
-    double prevError;
-    bool firstRun;
+    double integral = 0.0;
+    double previousError = 0.0;
+
+    double outputMin;
+    double outputMax;
 };

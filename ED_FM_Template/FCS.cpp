@@ -211,26 +211,86 @@ void Flight_Control_System::autoDriveCanardPosition()
 	}
 }
 
-void Flight_Control_System::PID_controller(double target, double meassurement, double kp, double ki, double kd, double tau, double bias)
+// The PID's --------------------------------------
+
+//Pitch PID
+double Flight_Control_System::PID_controller_pitch(double target, double meassurement, double kp, double ki, double kd, double tau, double bias)
 {
 	//--------------PID------------------------
-	error = target - meassurement;
+	pitch_error = target - meassurement;
 
-	double proportional = kp * error;
+	double proportional = kp * pitch_error;
 
-	double integral = integral_prior + 0.5 * ki * (error + error_prior);
+	double integral = pitch_integral_prior + 0.5 * ki * (pitch_error + pitch_error_prior);
 
-	double derivative = 2 * kd * (meassurement - meassurement_prior) + 2 * (tau - m_dt) * derivative_prior / 2 * (tau + m_dt);
+	double alpha = (2.0 * tau - m_dt) / (2.0 * tau + m_dt);
+	double beta = (2.0 * kd) / (2.0 * tau + m_dt);
+
+	double derivative = alpha * pitch_derivative_prior - beta * (meassurement - pitch_meassurement_prior);
 
 	double value_out = proportional + integral + derivative + bias;
 
-	meassurement_prior = meassurement;
-	error_prior = error;
-	integral_prior = integral;
-	derivative_prior = derivative;
+	pitch_meassurement_prior = meassurement;
+	pitch_error_prior = pitch_error;
+	pitch_integral_prior = integral;
+	pitch_derivative_prior = derivative;
 	//----------------END OF PID--------------------
-	PID_value_out = value_out;
+	return value_out;
 }
+
+//Roll PID
+
+double Flight_Control_System::PID_controller_roll(double target, double meassurement, double kp, double ki, double kd, double tau, double bias)
+{
+	//--------------PID------------------------
+	roll_error = target - meassurement;
+
+	double proportional = kp * roll_error;
+
+	double integral = roll_integral_prior + 0.5 * ki * (roll_error + roll_error_prior);
+
+	double alpha = (2.0 * tau - m_dt) / (2.0 * tau + m_dt);
+	double beta = (2.0 * kd) / (2.0 * tau + m_dt);
+
+	double derivative = alpha * roll_derivative_prior - beta * (meassurement - roll_meassurement_prior);
+
+	double value_out = proportional + integral + derivative + bias;
+
+	roll_meassurement_prior = meassurement;
+	roll_error_prior = roll_error;
+	roll_integral_prior = integral;
+	roll_derivative_prior = derivative;
+	//----------------END OF PID--------------------
+	return value_out;
+}
+
+//Yaw PID
+
+double Flight_Control_System::PID_controller_yaw(double target, double meassurement, double kp, double ki, double kd, double tau, double bias)
+{
+	//--------------PID------------------------
+	yaw_error = target - meassurement;
+
+	double proportional = kp * yaw_error;
+
+	double integral = yaw_integral_prior + 0.5 * ki * (yaw_error + yaw_error_prior);
+
+	double alpha = (2.0 * tau - m_dt) / (2.0 * tau + m_dt);
+	double beta = (2.0 * kd) / (2.0 * tau + m_dt);
+
+	double derivative = alpha * yaw_derivative_prior - beta * (meassurement - yaw_meassurement_prior);
+
+	double value_out = proportional + integral + derivative + bias;
+
+	yaw_meassurement_prior = meassurement;
+	yaw_error_prior = yaw_error;
+	yaw_integral_prior = integral;
+	yaw_derivative_prior = derivative;
+	//----------------END OF PID--------------------
+	return value_out;
+}
+
+//----------------------------------------------------
 
 void Flight_Control_System::update(double dt)
 {
