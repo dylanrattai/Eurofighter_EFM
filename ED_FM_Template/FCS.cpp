@@ -36,9 +36,15 @@ void Flight_Control_System::airborneInit()
 	zeroInit();
 }
 
+//Revised FBW System 
 void Flight_Control_System::limit_pitch()
 {
+	//Assign pitchcmd to filtered to make life easier
+
 	pitch_cmd_filtered = pitchcmd;
+
+	//Hard limiter for G (Safety)
+
 	double scale_factor = max_g / current_g;
 	if (scale_factor < 1)
 	{
@@ -50,7 +56,24 @@ void Flight_Control_System::limit_pitch()
 		pitch_cmd_filtered *= limit(scale_factor, 0.0, 1.0);
 	}
 	pitch_cmd_filtered = limit(pitch_cmd_filtered, -1.0, 1.0);
-	printf("Pitch_cmd_filtered = %f", pitch_cmd_filtered);
+
+	// Assign pitch to a pitch range
+
+	if (pitch_cmd_filtered >= 0) { pitch_cmd_filtered *= max_current_pitch_rate; }
+	else { pitch_cmd_filtered *= -min_current_pitch_rate; }
+
+	//Run the pid
+
+	//                                                                       kp ki kd
+	pitch_cmd_filtered = PID_controller_pitch(pitch_cmd_filtered, pitch_rate, 0, 0, 0);
+
+	//Translate back into -1 to 1
+
+	if (pitch_cmd_filtered >= 0) { pitch_cmd_filtered /= max_current_pitch_rate; }
+	else { pitch_cmd_filtered /= -min_current_pitch_rate; }
+
+	//Final clamp just to make sure
+	pitch_cmd_filtered = limit(pitch_cmd_filtered, -1.0, 1.0);
 }
 
 void Flight_Control_System::limit_yaw()
@@ -154,38 +177,65 @@ void Flight_Control_System::limiter_mode()
 
 void Flight_Control_System::subsonic_limit()
 {
+	// OLD
 	//Set max limits for this mode
-	max_AoA = 30 * DEG_TO_RAD;
 	limited_roll_rate = 200.0 * DEG_TO_RAD;
+
+
+	//----- NEW FBW LIMITS  ------
+	max_AoA = 30 * DEG_TO_RAD;
 	max_g = 4.45; // 7.25 G
 	max_neg_g = -1;
+
+	max_current_pitch_rate = 90 * DEG_TO_RAD;
+	min_current_pitch_rate = -20 * DEG_TO_RAD;
 }
 
 void Flight_Control_System::landing_limit()
 {
+	// OLD
 	//Set max limits for this mode
-	max_AoA = 15 * DEG_TO_RAD;
 	limited_roll_rate = 80.0 * DEG_TO_RAD;
-	max_g = 4/1.62921348; // 4 G
+	
+
+	//----- NEW FBW LIMITS  ------
+	max_AoA = 15 * DEG_TO_RAD;
+	max_g = 4 / 1.62921348; // 4 G
 	max_neg_g = -0;
+
+	max_current_pitch_rate = 25 * DEG_TO_RAD;
+	min_current_pitch_rate = -25 * DEG_TO_RAD;
 }
 
 void Flight_Control_System::supersonic_limit()
 {
+	// OLD
 	//Set max limits for this mode
-	max_AoA = 15 * DEG_TO_RAD;
 	limited_roll_rate = 200.0 * DEG_TO_RAD;
-	max_g = 9.0/ 1.62921348; // 9 G
+	
+
+	//----- NEW FBW LIMITS  ------
+	max_AoA = 15 * DEG_TO_RAD;
+	max_g = 9.0 / 1.62921348; // 9 G
 	max_neg_g = -1;
+
+	max_current_pitch_rate = 40 * DEG_TO_RAD;
+	min_current_pitch_rate = -25 * DEG_TO_RAD;
 }
 
 void Flight_Control_System::refueling_limit()
 {
+	// OLD
 	//Set max limits for this mode
-	max_AoA = 15 * DEG_TO_RAD;
 	limited_roll_rate = 80.0 * DEG_TO_RAD;
-	max_g = 2.0/1.62921348; //2 G
+
+	//----- NEW FBW LIMITS  ------
+	max_g = 2.0 / 1.62921348; //2 G
 	max_neg_g = -0.0;
+	max_AoA = 15 * DEG_TO_RAD;
+
+	max_current_pitch_rate = 30 * DEG_TO_RAD;
+	min_current_pitch_rate = -30 * DEG_TO_RAD;
 }
 
 void Flight_Control_System::autoDriveCanardPosition()
@@ -214,21 +264,29 @@ void Flight_Control_System::autoDriveCanardPosition()
 // The PID's --------------------------------------
 
 //Pitch PID
-double Flight_Control_System::PID_controller_pitch(double target, double meassurement, double kp, double ki, double kd, double tau, double bias)
+double Flight_Control_System::PID_controller_pitch(double target, double meassurement, double kp, double ki, double kd)
 {
 	//--------------PID------------------------
+	double tau = 0;
+
 	pitch_error = target - meassurement;
 
 	double proportional = kp * pitch_error;
 
 	double integral = pitch_integral_prior + 0.5 * ki * (pitch_error + pitch_error_prior);
 
+	// Add anti-windup clamp
+	double integral_max = 100.0;  // example, tune based on actuator limits
+	double integral_min = -100.0;
+	integral = clamp(integral, integral_min, integral_max);
+
+
 	double alpha = (2.0 * tau - m_dt) / (2.0 * tau + m_dt);
 	double beta = (2.0 * kd) / (2.0 * tau + m_dt);
 
 	double derivative = alpha * pitch_derivative_prior - beta * (meassurement - pitch_meassurement_prior);
 
-	double value_out = proportional + integral + derivative + bias;
+	double value_out = proportional + integral + derivative;
 
 	pitch_meassurement_prior = meassurement;
 	pitch_error_prior = pitch_error;

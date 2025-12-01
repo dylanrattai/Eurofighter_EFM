@@ -25,7 +25,7 @@ public:
     void refueling_limit();
     //void low_speed_recovery();
     void autoDriveCanardPosition();
-    double PID_controller_pitch(double target, double meassurement, double kp, double ki, double kd, double tau, double bias);
+    double PID_controller_pitch(double target, double meassurement, double kp, double ki, double kd);
     double PID_controller_roll(double target, double meassurement, double kp, double ki, double kd, double tau, double bias);
     double PID_controller_yaw(double target, double meassurement, double kp, double ki, double kd, double tau, double bias);
     //double Flight_Control_System::Canard_AOA();
@@ -132,6 +132,16 @@ private:
 
     double yawcmd = 0.0;
     double yaw_cmd_filtered = 0.0;
+
+    //----------------------------------------------
+
+    double max_current_pitch_rate = 0.0;
+    double max_current_roll_rate = 0.0;
+    double max_current_yaw_rate = 0.0; //These will be in RADIANS
+
+    double min_current_pitch_rate = 0.0;
+    double min_current_roll_rate = 0.0;
+    double min_current_yaw_rate = 0.0;
 
     // Mach-AoA limit table (radians)
     
