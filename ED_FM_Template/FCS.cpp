@@ -63,17 +63,7 @@ void Flight_Control_System::limit_pitch()
 	else { pitch_cmd_filtered *= -min_current_pitch_rate; }
 
 	//Run the pid
-
-	//                                                                       kp ki kd
-	pitch_cmd_filtered = PID_controller_pitch(pitch_cmd_filtered, pitch_rate, 0, 0, 0);
-
-	//Translate back into -1 to 1
-
-	if (pitch_cmd_filtered >= 0) { pitch_cmd_filtered /= max_current_pitch_rate; }
-	else { pitch_cmd_filtered /= -min_current_pitch_rate; }
-
-	//Final clamp just to make sure
-	pitch_cmd_filtered = limit(pitch_cmd_filtered, -1.0, 1.0);
+	pitch_cmd_filtered = PID_controller_pitch(pitch_cmd_filtered);
 }
 
 void Flight_Control_System::limit_yaw()
@@ -264,12 +254,19 @@ void Flight_Control_System::autoDriveCanardPosition()
 // The PID's --------------------------------------
 
 //Pitch PID
-double Flight_Control_System::PID_controller_pitch(double target, double meassurement, double kp, double ki, double kd)
+double Flight_Control_System::PID_controller_pitch(double target)
 {
-	//--------------PID------------------------
-	double tau = 0;
+	double measurement = pitch_rate;
 
-	pitch_error = target - meassurement;
+	//--------TUNING-----------
+	double kp = 1;
+	double ki = 0; //testing this as 0
+	double kd = 1;
+
+	//--------------PID------------------------
+	double tau = 0.4;
+
+	pitch_error = measurement - target;
 
 	double proportional = kp * pitch_error;
 
@@ -284,69 +281,96 @@ double Flight_Control_System::PID_controller_pitch(double target, double meassur
 	double alpha = (2.0 * tau - m_dt) / (2.0 * tau + m_dt);
 	double beta = (2.0 * kd) / (2.0 * tau + m_dt);
 
-	double derivative = alpha * pitch_derivative_prior - beta * (meassurement - pitch_meassurement_prior);
+	double derivative = alpha * pitch_derivative_prior
+		+ beta * (measurement - pitch_meassurement_prior);
+
 
 	double value_out = proportional + integral + derivative;
 
-	pitch_meassurement_prior = meassurement;
+	pitch_meassurement_prior = measurement;
 	pitch_error_prior = pitch_error;
 	pitch_integral_prior = integral;
 	pitch_derivative_prior = derivative;
 	//----------------END OF PID--------------------
-	return value_out;
+	pitch_pid_result = value_out;
+	//Translate back into -1 to 1
+
+	if (pitch_pid_result >= 0) { pitch_pid_result /= max_current_pitch_rate; }
+	else { pitch_pid_result /= -min_current_pitch_rate; }
+
+	//Final clamp just to make sure
+	pitch_pid_result = limit(pitch_pid_result, -1.0, 1.0);
+
+	return pitch_pid_result;
 }
 
 //Roll PID
 
-double Flight_Control_System::PID_controller_roll(double target, double meassurement, double kp, double ki, double kd, double tau, double bias)
-{
-	//--------------PID------------------------
-	roll_error = target - meassurement;
-
-	double proportional = kp * roll_error;
-
-	double integral = roll_integral_prior + 0.5 * ki * (roll_error + roll_error_prior);
-
-	double alpha = (2.0 * tau - m_dt) / (2.0 * tau + m_dt);
-	double beta = (2.0 * kd) / (2.0 * tau + m_dt);
-
-	double derivative = alpha * roll_derivative_prior - beta * (meassurement - roll_meassurement_prior);
-
-	double value_out = proportional + integral + derivative + bias;
-
-	roll_meassurement_prior = meassurement;
-	roll_error_prior = roll_error;
-	roll_integral_prior = integral;
-	roll_derivative_prior = derivative;
-	//----------------END OF PID--------------------
-	return value_out;
-}
+//void Flight_Control_System::PID_controller_roll(double target, double meassurement, double kp, double ki, double kd)
+//{
+//	//--------------PID------------------------
+//	double tau = 0;
+//
+//	roll_error = target - meassurement;
+//
+//	double proportional = kp * roll_error;
+//
+//	double integral = roll_integral_prior + 0.5 * ki * (roll_error + roll_error_prior);
+//
+//	// Add anti-windup clamp
+//	double integral_max = 100.0;  // example, tune based on actuator limits
+//	double integral_min = -100.0;
+//	integral = clamp(integral, integral_min, integral_max);
+//
+//
+//	double alpha = (2.0 * tau - m_dt) / (2.0 * tau + m_dt);
+//	double beta = (2.0 * kd) / (2.0 * tau + m_dt);
+//
+//	double derivative = alpha * roll_derivative_prior - beta * (meassurement - roll_meassurement_prior);
+//
+//	double value_out = proportional + integral + derivative;
+//
+//	roll_meassurement_prior = meassurement;
+//	roll_error_prior = pitch_error;
+//	roll_integral_prior = integral;
+//	roll_derivative_prior = derivative;
+//	//----------------END OF PID--------------------
+//	roll_pid_result = value_out;
+//}
 
 //Yaw PID
 
-double Flight_Control_System::PID_controller_yaw(double target, double meassurement, double kp, double ki, double kd, double tau, double bias)
-{
-	//--------------PID------------------------
-	yaw_error = target - meassurement;
-
-	double proportional = kp * yaw_error;
-
-	double integral = yaw_integral_prior + 0.5 * ki * (yaw_error + yaw_error_prior);
-
-	double alpha = (2.0 * tau - m_dt) / (2.0 * tau + m_dt);
-	double beta = (2.0 * kd) / (2.0 * tau + m_dt);
-
-	double derivative = alpha * yaw_derivative_prior - beta * (meassurement - yaw_meassurement_prior);
-
-	double value_out = proportional + integral + derivative + bias;
-
-	yaw_meassurement_prior = meassurement;
-	yaw_error_prior = yaw_error;
-	yaw_integral_prior = integral;
-	yaw_derivative_prior = derivative;
-	//----------------END OF PID--------------------
-	return value_out;
-}
+//void Flight_Control_System::PID_controller_yaw(double target, double meassurement, double kp, double ki, double kd)
+//{
+//	//--------------PID------------------------
+//	double tau = 0;
+//
+//	yaw_error = target - meassurement;
+//
+//	double proportional = kp * yaw_error;
+//
+//	double integral = yaw_integral_prior + 0.5 * ki * (yaw_error + yaw_error_prior);
+//
+//	// Add anti-windup clamp
+//	double integral_max = 100.0;  // example, tune based on actuator limits
+//	double integral_min = -100.0;
+//	integral = clamp(integral, integral_min, integral_max);
+//
+//
+//	double alpha = (2.0 * tau - m_dt) / (2.0 * tau + m_dt);
+//	double beta = (2.0 * kd) / (2.0 * tau + m_dt);
+//
+//	double derivative = alpha * yaw_derivative_prior - beta * (meassurement - yaw_meassurement_prior);
+//
+//	double value_out = proportional + integral + derivative;
+//
+//	yaw_meassurement_prior = meassurement;
+//	yaw_error_prior = pitch_error;
+//	yaw_integral_prior = integral;
+//	yaw_derivative_prior = derivative;
+//	//----------------END OF PID--------------------
+//	roll_pid_result = value_out;
+//}
 
 //----------------------------------------------------
 
@@ -368,6 +392,7 @@ void Flight_Control_System::update(double dt)
 	limit_roll();
 	limit_yaw();
 	limit_pitch();
+	printf("Pitch from FBW: %f ", pitch_cmd_filtered);
 	//low_speed_recovery();
 	autoDriveCanardPosition();
     m_dt = dt;

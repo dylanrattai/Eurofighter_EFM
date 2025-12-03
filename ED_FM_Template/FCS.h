@@ -25,9 +25,9 @@ public:
     void refueling_limit();
     //void low_speed_recovery();
     void autoDriveCanardPosition();
-    double PID_controller_pitch(double target, double meassurement, double kp, double ki, double kd);
-    double PID_controller_roll(double target, double meassurement, double kp, double ki, double kd, double tau, double bias);
-    double PID_controller_yaw(double target, double meassurement, double kp, double ki, double kd, double tau, double bias);
+    double PID_controller_pitch(double target);
+    void PID_controller_roll(double target, double meassurement, double kp, double ki, double kd);
+    void PID_controller_yaw(double target, double meassurement, double kp, double ki, double kd);
     //double Flight_Control_System::Canard_AOA();
     double const Flight_Control_System::getpitch() const
     {
@@ -103,6 +103,7 @@ private:
     double pitch_error = 0.0;
     double pitch_PID_value_out = 0.0;
     double pitch_integral_prior = 0.0;
+    double pitch_pid_result = 0.0;
 
     //Roll pid
     double roll_meassurement_prior = 0.0;
@@ -111,6 +112,7 @@ private:
     double roll_error = 0.0;
     double roll_PID_value_out = 0.0;
     double roll_integral_prior = 0.0;
+    double roll_pid_result = 0.0;
 
     //Yaw pid
     double yaw_meassurement_prior = 0.0;
@@ -119,6 +121,7 @@ private:
     double yaw_error = 0.0;
     double yaw_PID_value_out = 0.0;
     double yaw_integral_prior = 0.0;
+    double yaw_pid_result = 0.0;
 
     //------------------------------------------
     double subsonic_FCS_mode = 0.0;

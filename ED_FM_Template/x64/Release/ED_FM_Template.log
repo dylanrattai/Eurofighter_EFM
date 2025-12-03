@@ -516,7 +516,7 @@ C:\Users\patry\Documents\GitHub\Eurofighter_EFM\ED_FM_Template\Airframe.h(1492,6
 C:\Users\patry\Documents\GitHub\Eurofighter_EFM\ED_FM_Template\Fuel_System.h(242,41): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
   (compiling source file 'ED_FM_Template.cpp')
   
-C:\Users\patry\Documents\GitHub\Eurofighter_EFM\ED_FM_Template\FCS.h(167,18): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\patry\Documents\GitHub\Eurofighter_EFM\ED_FM_Template\FCS.h(170,18): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
   (compiling source file 'ED_FM_Template.cpp')
   
 C:\Users\patry\Documents\GitHub\Eurofighter_EFM\ED_FM_Template\ED_FM_Template.cpp(549,10): warning C4475: 'printf' : length modifier 'll' cannot be used with type field character 'f' in format specifier
@@ -1097,7 +1097,7 @@ C:\Users\patry\Documents\GitHub\Eurofighter_EFM\ED_FM_Template\Airframe.h(1488,7
 C:\Users\patry\Documents\GitHub\Eurofighter_EFM\ED_FM_Template\Airframe.h(1492,63): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
   (compiling source file 'FCS.cpp')
   
-C:\Users\patry\Documents\GitHub\Eurofighter_EFM\ED_FM_Template\FCS.h(167,18): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\patry\Documents\GitHub\Eurofighter_EFM\ED_FM_Template\FCS.h(170,18): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
   (compiling source file 'FCS.cpp')
   
   FlightModel.cpp
@@ -1617,13 +1617,13 @@ C:\Users\patry\Documents\GitHub\Eurofighter_EFM\ED_FM_Template\Airframe.h(1492,6
 C:\Users\patry\Documents\GitHub\Eurofighter_EFM\ED_FM_Template\Fuel_System.h(242,41): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
   (compiling source file 'FlightModel.cpp')
   
-C:\Users\patry\Documents\GitHub\Eurofighter_EFM\ED_FM_Template\FCS.h(167,18): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\patry\Documents\GitHub\Eurofighter_EFM\ED_FM_Template\FCS.h(170,18): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
   (compiling source file 'FlightModel.cpp')
   
      Creating library ..\..\bin\Gina.lib and object ..\..\bin\Gina.exp
   Generating code
-  15 of 589 functions ( 2.5%) were compiled, the rest were copied from previous compilation.
-    2 functions were new in current compilation
-    14 functions had inline decision re-evaluated but remain unchanged
+  4 of 589 functions ( 0.7%) were compiled, the rest were copied from previous compilation.
+    1 functions were new in current compilation
+    1 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   ED_FM_Template.vcxproj -> C:\Users\patry\Documents\GitHub\bin\Gina.dll

@@ -11,16 +11,16 @@
       "RelativeMoniker": "D:0:0:{30A7F19A-ED9B-4E78-99E7-C40FB579973A}|ED_FM_Template\\ED_FM_Template.vcxproj|solutionrelative:ED_FM_Template\\FCS.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{30A7F19A-ED9B-4E78-99E7-C40FB579973A}|ED_FM_Template\\ED_FM_Template.vcxproj|C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\FlightModel.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{30A7F19A-ED9B-4E78-99E7-C40FB579973A}|ED_FM_Template\\ED_FM_Template.vcxproj|solutionrelative:ED_FM_Template\\FlightModel.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{30A7F19A-ED9B-4E78-99E7-C40FB579973A}|ED_FM_Template\\ED_FM_Template.vcxproj|C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\dllmain.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{30A7F19A-ED9B-4E78-99E7-C40FB579973A}|ED_FM_Template\\ED_FM_Template.vcxproj|solutionrelative:ED_FM_Template\\dllmain.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{30A7F19A-ED9B-4E78-99E7-C40FB579973A}|ED_FM_Template\\ED_FM_Template.vcxproj|C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\ED_FM_Template.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{30A7F19A-ED9B-4E78-99E7-C40FB579973A}|ED_FM_Template\\ED_FM_Template.vcxproj|solutionrelative:ED_FM_Template\\ED_FM_Template.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{30A7F19A-ED9B-4E78-99E7-C40FB579973A}|ED_FM_Template\\ED_FM_Template.vcxproj|C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\ED_FM_Template.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{30A7F19A-ED9B-4E78-99E7-C40FB579973A}|ED_FM_Template\\ED_FM_Template.vcxproj|solutionrelative:ED_FM_Template\\ED_FM_Template.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{30A7F19A-ED9B-4E78-99E7-C40FB579973A}|ED_FM_Template\\ED_FM_Template.vcxproj|C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\Pid.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{30A7F19A-ED9B-4E78-99E7-C40FB579973A}|ED_FM_Template\\ED_FM_Template.vcxproj|solutionrelative:ED_FM_Template\\Pid.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -40,9 +40,35 @@
               "RelativeDocumentMoniker": "ED_FM_Template\\FCS.cpp",
               "ToolTip": "C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\FCS.cpp",
               "RelativeToolTip": "ED_FM_Template\\FCS.cpp",
-              "ViewState": "AgIAACUAAAAAAAAAAAAAACgAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAAEBAAAAAAAAAAAAAAsBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-11-30T00:01:21.319Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "dllmain.cpp",
+              "DocumentMoniker": "C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\dllmain.cpp",
+              "RelativeDocumentMoniker": "ED_FM_Template\\dllmain.cpp",
+              "ToolTip": "C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\dllmain.cpp",
+              "RelativeToolTip": "ED_FM_Template\\dllmain.cpp",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAAABQAAAAuAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-12-02T15:08:17.187Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "FlightModel.cpp",
+              "DocumentMoniker": "C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\FlightModel.cpp",
+              "RelativeDocumentMoniker": "ED_FM_Template\\FlightModel.cpp",
+              "ToolTip": "C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\FlightModel.cpp",
+              "RelativeToolTip": "ED_FM_Template\\FlightModel.cpp",
+              "ViewState": "AgIAADUDAAAAAAAAAAAAADcDAAATAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-12-02T15:05:36.801Z",
               "EditorCaption": ""
             },
             {
@@ -53,7 +79,7 @@
               "RelativeDocumentMoniker": "ED_FM_Template\\FCS.h",
               "ToolTip": "C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\FCS.h",
               "RelativeToolTip": "ED_FM_Template\\FCS.h",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAAABcAAAAZAAAAAAAAAA==",
+              "ViewState": "AgIAABgAAAAAAAAAAAAAABwAAAA/AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2025-11-24T10:48:24.387Z",
               "EditorCaption": ""
@@ -61,39 +87,14 @@
             {
               "$type": "Document",
               "DocumentIndex": 4,
-              "Title": "Pid.h",
-              "DocumentMoniker": "C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\Pid.h",
-              "RelativeDocumentMoniker": "ED_FM_Template\\Pid.h",
-              "ToolTip": "C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\Pid.h",
-              "RelativeToolTip": "ED_FM_Template\\Pid.h",
-              "ViewState": "AgIAACEAAAAAAAAAAAAUwCsAAAAWAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-11-24T10:50:47.025Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "ED_FM_Template.h",
-              "DocumentMoniker": "C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\ED_FM_Template.h",
-              "RelativeDocumentMoniker": "ED_FM_Template\\ED_FM_Template.h",
-              "ToolTip": "C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\ED_FM_Template.h",
-              "RelativeToolTip": "ED_FM_Template\\ED_FM_Template.h",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAASAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-11-16T14:24:53.306Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
               "Title": "ED_FM_Template.cpp",
               "DocumentMoniker": "C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\ED_FM_Template.cpp",
               "RelativeDocumentMoniker": "ED_FM_Template\\ED_FM_Template.cpp",
               "ToolTip": "C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\ED_FM_Template.cpp",
               "RelativeToolTip": "ED_FM_Template\\ED_FM_Template.cpp",
-              "ViewState": "AgIAAB4AAAAAAAAAAAAAABUAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAG4AAAAAAAAAAAAmwHkAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-11-16T14:03:37.716Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-16T14:03:37.716Z"
             }
           ]
         }
