@@ -78,7 +78,7 @@ private:
     double max_g = 0.0;
     double max_AoA = 0.0;
     double max_neg_g = 0.0;
-    double current_g = 0.0;
+    double current_g = 1.0;
     double pitch_rate = 0.0;
 
 	double AOA_BUFFER_ZONE = 0.05; // 3° in radians

@@ -740,8 +740,8 @@ void ed_fm_set_draw_args (EdDrawArgument * drawargs,size_t size)
 	drawargs[85].f = s_airframe->getLaunchBarPos();//aktuell noch ohne Anbindung an die Actuators, weil wir auch eh nix zum anziegne haben...
 	drawargs[621].f = s_fuelsystem->getFuelQtyTotal(); //Using to give fuel value
 
-
-	drawargs[2001].f = s_electric->getPP1_Bus();
+	//Might be causing crash so removed.
+	/*drawargs[2001].f = s_electric->getPP1_Bus();
 	drawargs[2002].f = s_electric->getPP2_Bus();
 	drawargs[2003].f = s_electric->getPP3_Bus();
 	drawargs[2004].f = s_electric->getPP4_Bus();
@@ -749,7 +749,7 @@ void ed_fm_set_draw_args (EdDrawArgument * drawargs,size_t size)
 	drawargs[2006].f = s_electric->getPP6_Bus();
 
 	drawargs[2007].f = s_electric->getXP1_Bus();
-	drawargs[2008].f = s_electric->getXP2_Bus();
+	drawargs[2008].f = s_electric->getXP2_Bus();*/
 
 	//--------this is Refueling-Probe argument---------
 	//drawargs[22].f = 1.0; //auskommentiert um zu testen ob FC3 das auch so macht...
