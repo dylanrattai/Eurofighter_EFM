@@ -265,54 +265,49 @@ void Flight_Control_System::autoDriveCanardPosition()
 //Pitch PID
 double Flight_Control_System::PID_controller_pitch(double target, bool is_neg)
 {
-	if (target >= 0.0) { target *= max_g; }
-	else { target *= -max_neg_g; }
-	target = target + 1;
-	target = clamp(target, max_neg_g * 1.7, max_g * 1.7);
-
+	// Convert stick position to target G
+	double target_g;
+	if (target >= 0.0) {
+		target_g = 1.0 + target * (max_g - 1.0);
+	}
+	else {
+		target_g = 1.0 + target * (1.0 - max_neg_g);
+	}
 
 	double measurement = current_g;
-	double airspeed_kt = (m_state.m_mach * 666.739);
 
+	// PID gains - TUNED FROM PYTHON SIMULATION
+	double kp = 0.28;
+	double ki = 0.25;
+	double kd = 0.15;
+	double tau = 0.02;
 
-	//--------TUNING-----------
-	double kp = 3.0 * clamp(1 - m_state.m_mach, 0, 1);
-	//was 2 // Values from FBW.lua         Sweetspot seems to be 0.48 mach (kp = 3.5)
-	double ki = 0.0;
-	double kd = 3; //was -8 
-	double bias = 0.0;
-	/*if (supersonic_FCS_mode == 1) { kd = 5; }*/
+	// Calculate error
+	pitch_error = target_g - measurement;
 
-
-	//--------------PID------------------------
-	double tau = 0.0225;  //Seems to be the sweetspot
-	pitch_error = target - measurement;
+	// Proportional term
 	double proportional = kp * pitch_error;
-	double integral = pitch_integral_prior + 0.5 * ki * (pitch_error + pitch_error_prior);
-	// Add anti-windup clamp
-	double integral_max = 2.0;  // example, tune based on actuator limits
-	double integral_min = -0.0;
-	integral = clamp(integral, integral_min, integral_max);
-	//m_state.m_mach
-	double derivative = 2 * kd * (measurement - pitch_meassurement_prior)
-		+ 2 * (tau - m_dt) * pitch_derivative_prior
-		/ 2 * (tau + m_dt);
-	double value_out = proportional + integral + derivative + bias;
-	pitch_meassurement_prior = measurement;
-	pitch_error_prior = pitch_error;
+
+	// Integral term with anti-windup
+	double integral = pitch_integral_prior + ki * pitch_error * m_dt;
+	integral = clamp(integral, -0.5, 0.5);
+
+	// Derivative term (on measurement to avoid derivative kick)
+	double raw_derivative = -(measurement - pitch_meassurement_prior) / m_dt;
+	double derivative = pitch_derivative_prior +
+		(m_dt / (tau + m_dt)) * (kd * raw_derivative - pitch_derivative_prior);
+
+	// Combine PID terms
+	double value_out = proportional + integral + derivative;
+
+	// Update state for next iteration
 	pitch_integral_prior = integral;
+	pitch_error_prior = pitch_error;
+	pitch_meassurement_prior = measurement;
 	pitch_derivative_prior = derivative;
-	//----------------END OF PID--------------------
 
-
-	pitch_pid_result = value_out;
-	//Translate back into -1 to 1
-	if (pitch_pid_result >= 0.0) { pitch_pid_result /= max_g; }
-	else { pitch_pid_result /= -max_neg_g; }
-	//pitch_pid_result /= 10;//max_g
-	//Final clamp just to make sure
-	pitch_pid_result = limit(pitch_pid_result, -1.0, 1.0);
-
+	// Output is already in -1 to 1 range from the PID
+	pitch_pid_result = clamp(value_out, -1.0, 1.0);
 
 	return pitch_pid_result;
 }
