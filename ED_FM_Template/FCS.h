@@ -25,7 +25,7 @@ public:
     void refueling_limit();
     //void low_speed_recovery();
     void autoDriveCanardPosition();
-    double PID_controller_pitch(double target);
+    double PID_controller_pitch(double target, bool is_neg);
     void PID_controller_roll(double target, double meassurement, double kp, double ki, double kd);
     void PID_controller_yaw(double target, double meassurement, double kp, double ki, double kd);
     //double Flight_Control_System::Canard_AOA();
@@ -177,6 +177,36 @@ private:
         else if (val > high) { return high; }
         else { return val; }
     }
+
+    double stick_to_g(double stick)
+    {
+        stick = clamp(stick, -1.0, 1.0);
+
+        double g_cmd;
+
+        if (stick >= 0.0)
+            g_cmd = 1.0 + stick * (max_g - 1.0);     // 1 -> +9
+        else
+            g_cmd = 1.0 + stick * (1.0 - max_neg_g); // 1 -> -2
+
+        return g_cmd;
+    }
+    static double max(double x, double y) 
+    {
+        if (x > y) {
+            return x;
+        }
+        else
+        {
+            return y;
+        }
+    }
+    double g_error_to_actuator(double g_err)
+    {
+        double g_range = max(max_g - 1.0, 1.0 - max_neg_g);
+        return clamp(g_err / g_range, -1.0, 1.0);
+    }
+
 };
 
 

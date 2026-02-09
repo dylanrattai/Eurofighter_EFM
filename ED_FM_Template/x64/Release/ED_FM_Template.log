@@ -516,6 +516,10 @@ C:\Users\patry\Documents\GitHub\Eurofighter_EFM\ED_FM_Template\Airframe.h(1492,6
 C:\Users\patry\Documents\GitHub\Eurofighter_EFM\ED_FM_Template\FCS.h(170,18): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
   (compiling source file 'FCS.cpp')
   
+C:\Users\patry\Documents\GitHub\Eurofighter_EFM\ED_FM_Template\FCS.cpp(408,52): warning C4474: 'printf' : too many arguments passed for format string
+      C:\Users\patry\Documents\GitHub\Eurofighter_EFM\ED_FM_Template\FCS.cpp(408,52):
+      placeholders and their parameters expect 1 variadic arguments, but 2 were provided
+  
      Creating library ..\..\bin\EF.lib and object ..\..\bin\EF.exp
   Generating code
   3 of 581 functions ( 0.5%) were compiled, the rest were copied from previous compilation.

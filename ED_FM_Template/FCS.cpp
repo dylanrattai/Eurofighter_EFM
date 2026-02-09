@@ -68,14 +68,11 @@ void Flight_Control_System::limit_pitch()
 	pitch_cmd_filtered = limit(pitch_cmd_filtered, -1.0, 1.0);
 
 	// Assign pitch to a pitch range
-
-	max_g = 8; //temp
-	/*if (pitch_cmd_filtered >= 0) { pitch_cmd_filtered *= max_g; }
-	else { pitch_cmd_filtered *= -max_neg_g; }*/
-	pitch_cmd_filtered *= max_g;
+	//pitch_cmd_filtered *= max_g; OLD
+	bool is_neg = false;
 
 	//Run the pid
-	pitch_cmd_filtered = PID_controller_pitch(pitch_cmd_filtered);
+	pitch_cmd_filtered = PID_controller_pitch(pitch_cmd_filtered, is_neg);
 }
 
 void Flight_Control_System::limit_yaw()
@@ -202,7 +199,7 @@ void Flight_Control_System::landing_limit()
 
 	//----- NEW FBW LIMITS  ------
 	max_AoA = 15 * DEG_TO_RAD;
-	max_g = 4 / 1.62921348; // 4 G
+	max_g = 4; // 4 G
 	max_neg_g = -0;
 
 	max_current_pitch_rate = 15 * DEG_TO_RAD;
@@ -218,7 +215,7 @@ void Flight_Control_System::supersonic_limit()
 
 	//----- NEW FBW LIMITS  ------
 	max_AoA = 15 * DEG_TO_RAD;
-	max_g = 9.0 / 1.62921348; // 9 G
+	max_g = 9.0 ; // 9 G
 	max_neg_g = -1;
 
 	max_current_pitch_rate = 7 * DEG_TO_RAD;
@@ -232,7 +229,7 @@ void Flight_Control_System::refueling_limit()
 	limited_roll_rate = 80.0 * DEG_TO_RAD;
 
 	//----- NEW FBW LIMITS  ------
-	max_g = 2.0 / 1.62921348; //2 G
+	max_g = 2.0 ; //2 G
 	max_neg_g = -0.0;
 	max_AoA = 15 * DEG_TO_RAD;
 
@@ -266,56 +263,56 @@ void Flight_Control_System::autoDriveCanardPosition()
 // The PID's --------------------------------------
 
 //Pitch PID
-double Flight_Control_System::PID_controller_pitch(double target)
+double Flight_Control_System::PID_controller_pitch(double target, bool is_neg)
 {
+	if (target >= 0.0) { target *= max_g; }
+	else { target *= -max_neg_g; }
+	target = target + 1;
+	target = clamp(target, max_neg_g * 1.7, max_g * 1.7);
+
+
 	double measurement = current_g;
 	double airspeed_kt = (m_state.m_mach * 666.739);
-	//--------TUNING-----------
-	double kp = 0;
-	if (airspeed_kt > 320) { kp = 3.5 * clamp(1 - m_state.m_mach,0,1); }
-	else { kp = 3.5 * clamp(1 - m_state.m_mach, 0, 1); }
-	 //was 2 // Values from FBW.lua         Sweetspot seems to be 0.48 mach (kp = 3.5)
-	double ki = 0.0; 
-	double kd = 2; //was -8 
-	double bias = 2;
 
+
+	//--------TUNING-----------
+	double kp = 3.0 * clamp(1 - m_state.m_mach, 0, 1);
+	//was 2 // Values from FBW.lua         Sweetspot seems to be 0.48 mach (kp = 3.5)
+	double ki = 0.0;
+	double kd = 3; //was -8 
+	double bias = 0.0;
 	/*if (supersonic_FCS_mode == 1) { kd = 5; }*/
+
 
 	//--------------PID------------------------
 	double tau = 0.0225;  //Seems to be the sweetspot
-
 	pitch_error = target - measurement;
-
 	double proportional = kp * pitch_error;
-
 	double integral = pitch_integral_prior + 0.5 * ki * (pitch_error + pitch_error_prior);
-
 	// Add anti-windup clamp
 	double integral_max = 2.0;  // example, tune based on actuator limits
-	double integral_min = -2.0;
+	double integral_min = -0.0;
 	integral = clamp(integral, integral_min, integral_max);
-
 	//m_state.m_mach
-
 	double derivative = 2 * kd * (measurement - pitch_meassurement_prior)
 		+ 2 * (tau - m_dt) * pitch_derivative_prior
 		/ 2 * (tau + m_dt);
-
-
 	double value_out = proportional + integral + derivative + bias;
-
 	pitch_meassurement_prior = measurement;
 	pitch_error_prior = pitch_error;
 	pitch_integral_prior = integral;
 	pitch_derivative_prior = derivative;
 	//----------------END OF PID--------------------
+
+
 	pitch_pid_result = value_out;
 	//Translate back into -1 to 1
-
-	pitch_pid_result /= 8;//max_g
-
+	if (pitch_pid_result >= 0.0) { pitch_pid_result /= max_g; }
+	else { pitch_pid_result /= -max_neg_g; }
+	//pitch_pid_result /= 10;//max_g
 	//Final clamp just to make sure
 	pitch_pid_result = limit(pitch_pid_result, -1.0, 1.0);
+
 
 	return pitch_pid_result;
 }
@@ -408,7 +405,7 @@ void Flight_Control_System::update(double dt)
 	limit_roll();
 	limit_yaw();
 	limit_pitch();
-	printf("Pitch from FBW: %f ", pitch_cmd_filtered);
+	printf("Pitch from FBW: %f ", pitch_cmd_filtered, "\n");
 	//low_speed_recovery();
 	autoDriveCanardPosition();
     m_dt = dt;
