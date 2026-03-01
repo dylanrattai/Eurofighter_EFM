@@ -74,8 +74,8 @@ void Flight_Control_System::limit_pitch()
 	bool is_neg = false;
 
 	//Run the pid
-	double target_g = (1 + target * 100 / 12.5);
-	pitchController.update(target_g, current_g, dt);
+	double target_g = (1 + pitch_cmd_filtered * 100 / 12.5);
+	pitchController.update(target_g, current_g, m_dt);
 	pitch_cmd_filtered = pitchController.getOutputPID();
 }
 

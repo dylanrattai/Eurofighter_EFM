@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{30A7F19A-ED9B-4E78-99E7-C40FB579973A}|ED_FM_Template\\ED_FM_Template.vcxproj|C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\Pid.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{30A7F19A-ED9B-4E78-99E7-C40FB579973A}|ED_FM_Template\\ED_FM_Template.vcxproj|solutionrelative:ED_FM_Template\\Pid.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{30A7F19A-ED9B-4E78-99E7-C40FB579973A}|ED_FM_Template\\ED_FM_Template.vcxproj|C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\FCS.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{30A7F19A-ED9B-4E78-99E7-C40FB579973A}|ED_FM_Template\\ED_FM_Template.vcxproj|solutionrelative:ED_FM_Template\\FCS.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
@@ -34,17 +38,17 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "FCS.cpp",
               "DocumentMoniker": "C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\FCS.cpp",
               "RelativeDocumentMoniker": "ED_FM_Template\\FCS.cpp",
               "ToolTip": "C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\FCS.cpp",
               "RelativeToolTip": "ED_FM_Template\\FCS.cpp",
-              "ViewState": "AgIAAB8BAAAAAAAAAAAmwCYBAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAEwAAAAAAAAAAAAvwEwAAAA4AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-11-30T00:01:21.319Z",
               "IsPinned": true,
@@ -52,7 +56,24 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 0,
+              "Title": "Pid.h",
+              "DocumentMoniker": "C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\Pid.h",
+              "RelativeDocumentMoniker": "ED_FM_Template\\Pid.h",
+              "ToolTip": "C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\Pid.h",
+              "RelativeToolTip": "ED_FM_Template\\Pid.h",
+              "ViewState": "AgIAAEAAAAAAAAAAAAAAAB4AAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2026-03-01T11:59:47.92Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "Engine.h",
               "DocumentMoniker": "C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\Engine.h",
               "RelativeDocumentMoniker": "ED_FM_Template\\Engine.h",
@@ -64,7 +85,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Airframe.cpp",
               "DocumentMoniker": "C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\Airframe.cpp",
               "RelativeDocumentMoniker": "ED_FM_Template\\Airframe.cpp",
@@ -76,7 +97,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "Fuel_System.h",
               "DocumentMoniker": "C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\Fuel_System.h",
               "RelativeDocumentMoniker": "ED_FM_Template\\Fuel_System.h",
@@ -88,7 +109,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "dllmain.cpp",
               "DocumentMoniker": "C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\dllmain.cpp",
               "RelativeDocumentMoniker": "ED_FM_Template\\dllmain.cpp",
@@ -100,7 +121,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "FCS.h",
               "DocumentMoniker": "C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\FCS.h",
               "RelativeDocumentMoniker": "ED_FM_Template\\FCS.h",

@@ -9,12 +9,12 @@ public:
         outputMin(outputMin), outputMax(outputMax) {
     }
 
-    double update(double setpoint, double value, wModelTime dt, bool inverted_logic = false) {
+    double update(double setpoint, double value, double dt, bool inverted_logic = false) {
 
         // Calculate error
         double error = inverted_logic ? setpoint - value : value - setpoint;
 
-        total_time + = dt;
+        total_time += dt;
         // --- Proportional term ---
         P = Kp * error;
 
@@ -42,7 +42,7 @@ public:
 
     void reset()
     {
-        total_time = 0.0
+        total_time = 0.0;
         prior_error = 0.0;
         prior_proportional = 0.0;
         prior_integral = 0.0;
@@ -53,7 +53,7 @@ public:
 
 private:
     double Kp, Ki, Kd   = 0.0;
-    double P            = 0.0
+    double P = 0.0;
     double I            = 0.0;
     double D            = 0.0;
     double tau          = 0.0; //Time constant
