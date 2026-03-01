@@ -19,7 +19,7 @@ public:
         P = Kp * error;
 
         // --- Integral term with clamping ---
-        double integral += error * dt;
+        integral += error * dt;
         I = Ki * integral;
 
         // --- Derivative term ---
@@ -42,6 +42,7 @@ public:
 
     void reset()
     {
+        integral = 0.0;
         total_time = 0.0;
         prior_error = 0.0;
         prior_proportional = 0.0;
@@ -59,8 +60,9 @@ private:
     double tau          = 0.0; //Time constant
     double value_out    = 0.0;
 
-    double total_time = 0.0;
+    double total_time            = 0.0;
 
+    double integral             = 0.0;
     double prior_error          = 0.0;
     double prior_proportional   = 0.0;
     double prior_integral       = 0.0;
