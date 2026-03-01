@@ -32,6 +32,8 @@ void Flight_Control_System::zeroInit()
 	pitch_error_prior = pitch_error;
 	pitch_meassurement_prior = pitch_rate;
 
+	pitchController.PID(0.28, 0.25, 0.15, -1.0, 1.0);
+
 }
 void Flight_Control_System::coldInit()
 {
@@ -72,7 +74,9 @@ void Flight_Control_System::limit_pitch()
 	bool is_neg = false;
 
 	//Run the pid
-	pitch_cmd_filtered = PID_controller_pitch(pitch_cmd_filtered, is_neg);
+	double target_g = (1 + target * 100 / 12.5);
+	pitchController.update(target_g, current_g, dt);
+	pitch_cmd_filtered = pitchController.getOutputPID();
 }
 
 void Flight_Control_System::limit_yaw()
@@ -260,62 +264,6 @@ void Flight_Control_System::autoDriveCanardPosition()
 	}
 }
 
-// The PID's --------------------------------------
-pitchController.PID(0.28, 0.25, 0.15, -1.0, 1.0);
-//Pitch PID
-double Flight_Control_System::PID_controller_pitch(double target, bool is_neg)
-{
-	// Validate delta time
-	if (m_dt <= 1e-6) {
-		return pitch_pid_result;
-	}
-	// Convert stick position to target G
-	double target_g = (1 + target * 100 / 12.5);
-
-	double measurement = current_g;
-	printf("G mesurement from FBW: %f \n ", measurement);
-
-	// PID gains - TUNED FROM PYTHON SIMULATION
-	double kp = 0.28;
-	double ki = 0.25;
-	double kd = 0.15;
-	double tau = 0.02;
-
-	// Calculate error
-	pitch_error = target_g - measurement;
-
-	// Proportional term
-	double proportional = kp * pitch_error;
-
-	// Integral term with anti-windup
-	double integral = pitch_integral_prior + ki * pitch_error * m_dt;
-	//printf("Pitch integral from FBW: %f \n ", integral);
-	printf("Pitch error from FBW: %f \n ", pitch_error);
-	integral = clamp(integral, -0.1, 0.5);
-
-	// Derivative term (on measurement to avoid derivative kick)
-	double raw_derivative = -(measurement - pitch_meassurement_prior) / m_dt;
-	// Filter the raw derivative first, THEN apply gain
-	double derivative = pitch_derivative_prior +
-		(m_dt / (tau + m_dt)) * (raw_derivative - pitch_derivative_prior);
-	derivative *= kd;
-	printf("Pitch derivative from FBW: %f \n ", derivative);
-	derivative = clamp(derivative, -0.1, 0.1);
-	// Combine PID terms
-	double value_out = proportional + integral + derivative;
-
-	// Update state for next iteration
-	pitch_integral_prior = integral;
-	pitch_error_prior = pitch_error;
-	pitch_meassurement_prior = measurement;
-	pitch_derivative_prior = derivative;
-
-	// Output is already in -1 to 1 range from the PID
-	pitch_pid_result = clamp(value_out, -1.0, 1.0);
-
-	return pitch_pid_result;
-}
-
 
 //Roll PID
 
@@ -401,8 +349,6 @@ void Flight_Control_System::update(double dt)
 	current_aoa = m_state.m_aoa;
 	airspeed = m_state.m_mach; 
 	//wing_stall = m_flight_model.getWingstall();
-	double target_g = (1 + target * 100 / 12.5);
-	pitchController.update(target_g, current_g, dt);
 	limiter_mode();
 	limit_roll();
 	limit_yaw();
