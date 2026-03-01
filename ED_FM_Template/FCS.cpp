@@ -261,7 +261,7 @@ void Flight_Control_System::autoDriveCanardPosition()
 }
 
 // The PID's --------------------------------------
-
+pitchController.PID(0.28, 0.25, 0.15, -1.0, 1.0);
 //Pitch PID
 double Flight_Control_System::PID_controller_pitch(double target, bool is_neg)
 {
@@ -408,6 +408,9 @@ void Flight_Control_System::update(double dt)
 	//low_speed_recovery();
 	autoDriveCanardPosition();
     m_dt = dt;
+
+	double target_g = (1 + target * 100 / 12.5);
+	pitchController.update(target_g, current_g, dt);
 }
 
 
