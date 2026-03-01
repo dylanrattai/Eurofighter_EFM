@@ -4,7 +4,7 @@
 #include "Input.h"
 #include "Airframe.h"
 #include "BaseComponent.h"
-//#include "Pid.h"
+#include "Pid.h"
 
 class Flight_Control_System
 {
@@ -53,6 +53,8 @@ public:
     {
         return limit(throttle_cmd_filtered_2, -1, 1);
     }
+
+	PID pitchController;
 private:
     State& m_state;
     Input& m_input;
@@ -81,7 +83,7 @@ private:
     double current_g = 1.0;
     double pitch_rate = 0.0;
 
-	double AOA_BUFFER_ZONE = 0.05; // 3° in radians
+	double AOA_BUFFER_ZONE = 0.05; // 3Â° in radians
 	double BLEND_RATE = 0.5; // Blend rate for soft limit zone
 
 	double pitchcmd = 0.0; // Pilot's pitch command
@@ -91,10 +93,10 @@ private:
 	double pi = 3.14159265358979323846;
     double m_dt = 0.0;
 
-    const double GROUND_AOA_MAX = 0.35;    // 20° in radians
-    const double GROUND_AOA_MIN = -0.09;    // -5° in radians
-    const double LANDING_AOA_LIMIT = 0.3142; // 18° in radians
-    const double DEFAULT_AOA_LIMIT = 0.4189; // 24° in radians#
+    const double GROUND_AOA_MAX = 0.35;    // 20Â° in radians
+    const double GROUND_AOA_MIN = -0.09;    // -5Â° in radians
+    const double LANDING_AOA_LIMIT = 0.3142; // 18Â° in radians
+    const double DEFAULT_AOA_LIMIT = 0.4189; // 24Â° in radians#
 
     //Pitch pid
     double pitch_meassurement_prior = 0.0;
