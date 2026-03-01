@@ -104,6 +104,7 @@ private:
     double pitch_PID_value_out = 0.0;
     double pitch_integral_prior = 0.0;
     double pitch_pid_result = 0.0;
+    double pitch_target_prev = 0.0;
 
     //Roll pid
     double roll_meassurement_prior = 0.0;
@@ -135,6 +136,9 @@ private:
 
     double yawcmd = 0.0;
     double yaw_cmd_filtered = 0.0;
+
+
+
 
     //----------------------------------------------
 

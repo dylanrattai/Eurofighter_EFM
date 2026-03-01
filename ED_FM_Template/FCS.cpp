@@ -265,16 +265,15 @@ void Flight_Control_System::autoDriveCanardPosition()
 //Pitch PID
 double Flight_Control_System::PID_controller_pitch(double target, bool is_neg)
 {
+	// Validate delta time
+	if (m_dt <= 1e-6) {
+		return pitch_pid_result;
+	}
 	// Convert stick position to target G
-	double target_g;
-	if (target >= 0.0) {
-		target_g = 1.0 + target * (max_g - 1.0);
-	}
-	else {
-		target_g = 1.0 + target * (1.0 - max_neg_g);
-	}
+	double target_g = (1 + target * 100 / 12.5);
 
 	double measurement = current_g;
+	printf("G mesurement from FBW: %f \n ", measurement);
 
 	// PID gains - TUNED FROM PYTHON SIMULATION
 	double kp = 0.28;
@@ -290,13 +289,18 @@ double Flight_Control_System::PID_controller_pitch(double target, bool is_neg)
 
 	// Integral term with anti-windup
 	double integral = pitch_integral_prior + ki * pitch_error * m_dt;
-	integral = clamp(integral, -0.5, 0.5);
+	//printf("Pitch integral from FBW: %f \n ", integral);
+	printf("Pitch error from FBW: %f \n ", pitch_error);
+	integral = clamp(integral, -0.1, 0.5);
 
 	// Derivative term (on measurement to avoid derivative kick)
 	double raw_derivative = -(measurement - pitch_meassurement_prior) / m_dt;
+	// Filter the raw derivative first, THEN apply gain
 	double derivative = pitch_derivative_prior +
-		(m_dt / (tau + m_dt)) * (kd * raw_derivative - pitch_derivative_prior);
-
+		(m_dt / (tau + m_dt)) * (raw_derivative - pitch_derivative_prior);
+	derivative *= kd;
+	printf("Pitch derivative from FBW: %f \n ", derivative);
+	derivative = clamp(derivative, -0.1, 0.1);
 	// Combine PID terms
 	double value_out = proportional + integral + derivative;
 
@@ -311,6 +315,7 @@ double Flight_Control_System::PID_controller_pitch(double target, bool is_neg)
 
 	return pitch_pid_result;
 }
+
 
 //Roll PID
 
@@ -400,7 +405,6 @@ void Flight_Control_System::update(double dt)
 	limit_roll();
 	limit_yaw();
 	limit_pitch();
-	printf("Pitch from FBW: %f ", pitch_cmd_filtered, "\n");
 	//low_speed_recovery();
 	autoDriveCanardPosition();
     m_dt = dt;

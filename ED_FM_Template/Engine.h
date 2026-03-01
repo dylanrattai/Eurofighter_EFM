@@ -389,7 +389,7 @@ double Engine::getRPMNorm2()
 
 	m_rpmPrevious2 = m_rpmNormal2;
 
-	printf("RPM_Engine_2 %f\n", m_rpmNormal2);
+	//printf("RPM_Engine_2 %f\n", m_rpmNormal2);
 
 	return m_rpmNormal2;
 }
