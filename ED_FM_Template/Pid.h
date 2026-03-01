@@ -34,12 +34,10 @@ public:
         prior_proportional  = P;
         prior_integral      = I;
         prior_derivative    = D;
-
-        double period = 2.0 * (t1 + t2);
-
+        
         double prior_value_out = value_out;
 
-        return output;
+        return value_out;
     }
 
     void reset()
