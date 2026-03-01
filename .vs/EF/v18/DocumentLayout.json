@@ -51,8 +51,7 @@
               "ViewState": "AgIAAEwAAAAAAAAAAAAvwEwAAAA4AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-11-30T00:01:21.319Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
@@ -62,14 +61,10 @@
               "RelativeDocumentMoniker": "ED_FM_Template\\Pid.h",
               "ToolTip": "C:\\Users\\patry\\Documents\\GitHub\\Eurofighter_EFM\\ED_FM_Template\\Pid.h",
               "RelativeToolTip": "ED_FM_Template\\Pid.h",
-              "ViewState": "AgIAAEAAAAAAAAAAAAAAAEoAAABYAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2026-03-01T11:59:47.92Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
             },
             {
               "$type": "Document",
