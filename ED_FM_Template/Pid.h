@@ -28,7 +28,7 @@ public:
 
         // --- Total output ---
         double value_out = P + I + D;
-        value_out = clamp(output, outputMin, outputMax);
+        value_out = clamp(value_out, outputMin, outputMax);
 
         prior_error         = error;
         prior_proportional  = P;
