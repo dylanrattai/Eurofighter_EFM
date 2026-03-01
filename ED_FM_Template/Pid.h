@@ -4,7 +4,7 @@
 class PID {
 public:
     PID(double Kp, double Ki, double Kd,
-        double outputMin = -1e9, double outputMax = 1e9)
+        double outputMin = -1e9, double outputMax = 1e9) = default;
         : Kp(Kp), Ki(Ki), Kd(Kd),
         outputMin(outputMin), outputMax(outputMax) {
     }
