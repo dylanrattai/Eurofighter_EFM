@@ -32,7 +32,7 @@ void Flight_Control_System::zeroInit()
 	pitch_error_prior = pitch_error;
 	pitch_meassurement_prior = pitch_rate;
 
-	pitchController.PID(0.28, 0.25, 0.15, -1.0, 1.0);
+	pitchController.initialize(0.28, 0.25, 0.15, -1.0, 1.0);
 
 }
 void Flight_Control_System::coldInit()
