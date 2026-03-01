@@ -9,42 +9,68 @@ public:
         outputMin(outputMin), outputMax(outputMax) {
     }
 
-    double compute(double setpoint, double measurement, double dt) {
+    double update(double setpoint, double value, wModelTime dt, bool inverted_logic = false) {
 
         // Calculate error
-        double error = setpoint - measurement;
+        double error = inverted_logic ? setpoint - value : value - setpoint;
 
+        total_time + = dt;
         // --- Proportional term ---
-        double P = Kp * error;
+        P = Kp * error;
 
         // --- Integral term with clamping ---
-        integral += error * dt;
-        integral = clamp(integral, -1000.0, 1000.0); // anti-windup
-        double I = Ki * integral;
+        double integral += error * dt;
+        I = Ki * integral;
 
         // --- Derivative term ---
-        double derivative = (error - previousError) / dt;
-        double D = Kd * derivative;
+        double derivative = (error - prior_error) / dt;
+        D = Kd * derivative;
 
         // --- Total output ---
-        double output = P + I + D;
-        output = clamp(output, outputMin, outputMax);
+        double value_out = P + I + D;
+        value_out = clamp(output, outputMin, outputMax);
 
-        previousError = error;
+        prior_error         = error;
+        prior_proportional  = P;
+        prior_integral      = I;
+        prior_derivative    = D;
+
+        double period = 2.0 * (t1 + t2);
+
+        double prior_value_out = value_out;
+
         return output;
     }
 
     void reset()
     {
-        integral = 0.0;
-        previousError = 0.0;
+        total_time = 0.0
+        prior_error = 0.0;
+        prior_proportional = 0.0;
+        prior_integral = 0.0;
+        prior_derivative = 0.0;
     }
 
 private:
-    double Kp, Ki, Kd;
-    double integral = 0.0;
-    double previousError = 0.0;
+    double Kp, Ki, Kd   = 0.0;
+    double P            = 0.0
+    double I            = 0.0;
+    double D            = 0.0;
+    double tau          = 0.0; //Time constant
+    double value_out    = 0.0;
 
-    double outputMin;
-    double outputMax;
+    double total_time = 0.0;
+
+    double prior_error          = 0.0;
+    double prior_proportional   = 0.0;
+    double prior_integral       = 0.0;
+    double prior_derivative     = 0.0;
+
+    double Pi                   = 3.1415926536;
+
+    double outputMin    = 0.0; //Amplitude filters to limit max controller output
+    double outputMax    = 0.0; //Amplitude filters to limit max controller output
+
+    double LPF          = 0.0; //Frequency filters to damp the oscilations of controller
+    double HPF          = 0.0; //Frequency filters to damp the oscilations of controller
 };
