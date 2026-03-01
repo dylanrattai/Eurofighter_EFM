@@ -401,6 +401,8 @@ void Flight_Control_System::update(double dt)
 	current_aoa = m_state.m_aoa;
 	airspeed = m_state.m_mach; 
 	//wing_stall = m_flight_model.getWingstall();
+	double target_g = (1 + target * 100 / 12.5);
+	pitchController.update(target_g, current_g, dt);
 	limiter_mode();
 	limit_roll();
 	limit_yaw();
@@ -409,8 +411,6 @@ void Flight_Control_System::update(double dt)
 	autoDriveCanardPosition();
     m_dt = dt;
 
-	double target_g = (1 + target * 100 / 12.5);
-	pitchController.update(target_g, current_g, dt);
 }
 
 
