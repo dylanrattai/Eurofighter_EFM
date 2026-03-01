@@ -49,6 +49,8 @@ public:
         prior_derivative = 0.0;
     }
 
+    double getOutputPID() { return value_out; }
+
 private:
     double Kp, Ki, Kd   = 0.0;
     double P            = 0.0
