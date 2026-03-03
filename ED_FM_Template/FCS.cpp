@@ -34,7 +34,7 @@ void Flight_Control_System::zeroInit()
 	//                         P  I  D
 	pitchController.initialize(1, 0, 0, -1.0, 1.0);
 	//                        P  I  D
-	rollController.initialize(1, 0, 0, -1.0, 1.0);
+	rollController.initialize(3, 0, 0, -1.0, 1.0);
 
 }
 void Flight_Control_System::coldInit()
@@ -121,27 +121,30 @@ void Flight_Control_System::limit_yaw()
 void Flight_Control_System::limit_roll()
 {
 	roll_cmd_filtered = rollcmd;
-	//REALLY TEMPORARY
-	//if (landing_FCS_mode == 1.0)
-	//{
-	//	roll_cmd_filtered *= 0.5;
-	//}
-	//else if (subsonic_FCS_mode == 1.0)
-	//{
-	//	roll_cmd_filtered *= 1;
-	//}
-	//else if (supersonic_FCS_mode == 1.0)
-	//{
-	//	roll_cmd_filtered *= 0.25;
-	//}
-	//else if (refueling_FCS_mode == 1.0)
-	//{
-	//	roll_cmd_filtered *= 0.5;
-	//}
-	//roll_cmd_filtered = limit(roll_cmd_filtered, -1.0, 1.0);
-	roll_cmd_filtered *= (200 * DEG_TO_RAD);
-	rollController.update(roll_cmd_filtered, m_state.m_omega.x, m_dt);
-	roll_cmd_filtered = rollController.getOutputPID() / (200 * DEG_TO_RAD);
+	if (landing_FCS_mode == 1.0)
+	{
+		roll_cmd_filtered *= 0.5;
+	}
+	else if (subsonic_FCS_mode == 1.0)
+	{
+		roll_cmd_filtered *= 1;
+	}
+	else if (supersonic_FCS_mode == 1.0)
+	{
+		roll_cmd_filtered *= 0.25;
+	}
+	else if (refueling_FCS_mode == 1.0)
+	{
+		roll_cmd_filtered *= 0.5;
+	}
+	roll_cmd_filtered = limit(roll_cmd_filtered, -1.0, 1.0);
+	roll_cmd_filtered = roll_cmd_filtered * (200 * DEG_TO_RAD);
+	//printf("Roll command: %f \n", rollcmd);
+	//printf("Roll command to deg: %f \n", roll_cmd_filtered / DEG_TO_RAD);
+	//printf("Roll rate deg: %f \n", roll_rate / DEG_TO_RAD);
+	rollController.update(roll_cmd_filtered, roll_rate, m_dt);
+	roll_cmd_filtered = -(rollController.getOutputPID() / (200 * DEG_TO_RAD));
+	rollController.debug();
 }
 
 void Flight_Control_System::limiter_mode()

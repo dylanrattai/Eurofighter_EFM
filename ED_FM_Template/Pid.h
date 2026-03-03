@@ -53,6 +53,15 @@ public:
         prior_derivative = 0.0;
     }
 
+    void debug()
+    {
+        printf("Error: %f | ", prior_error);
+        printf("Proportional: %f | ", P);
+        printf("Integral: % f | ", I);
+        printf("Derivative: % f | ", D);
+        printf("Value out: % f | ", value_out);
+    }
+
     double getOutputPID() { return value_out; }
 
 private:
