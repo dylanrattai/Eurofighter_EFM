@@ -31,8 +31,10 @@ void Flight_Control_System::zeroInit()
 	pitch_integral_prior = 0; // or small value
 	pitch_error_prior = pitch_error;
 	pitch_meassurement_prior = pitch_rate;
-
-	pitchController.initialize(0.28, 0.25, 0.15, -1.0, 1.0);
+	//                         P  I  D
+	pitchController.initialize(1, 0, 0, -1.0, 1.0);
+	//                        P  I  D
+	rollController.initialize(1, 0, 0, -1.0, 1.0);
 
 }
 void Flight_Control_System::coldInit()
@@ -53,7 +55,7 @@ void Flight_Control_System::limit_pitch()
 {
 	//Assign pitchcmd to filtered to make life easier
 
-	pitch_cmd_filtered = -pitchcmd;
+	pitch_cmd_filtered = pitchcmd;
 
 	//Hard limiter for G (Safety)
 
@@ -74,9 +76,9 @@ void Flight_Control_System::limit_pitch()
 	bool is_neg = false;
 
 	//Run the pid
-	double target_g = (1 + pitch_cmd_filtered * 100 / 12.5);
+	double target_g = pitch_cmd_filtered * 4;//(1 + pitch_cmd_filtered * 100 / 12.5);
 	pitchController.update(target_g, current_g, m_dt);
-	pitch_cmd_filtered = pitchController.getOutputPID();
+	//pitch_cmd_filtered = pitchController.getOutputPID() / 4; Temporarly comment
 }
 
 void Flight_Control_System::limit_yaw()
@@ -120,23 +122,26 @@ void Flight_Control_System::limit_roll()
 {
 	roll_cmd_filtered = rollcmd;
 	//REALLY TEMPORARY
-	if (landing_FCS_mode == 1.0)
-	{
-		roll_cmd_filtered *= 0.5;
-	}
-	else if (subsonic_FCS_mode == 1.0)
-	{
-		roll_cmd_filtered *= 1;
-	}
-	else if (supersonic_FCS_mode == 1.0)
-	{
-		roll_cmd_filtered *= 0.25;
-	}
-	else if (refueling_FCS_mode == 1.0)
-	{
-		roll_cmd_filtered *= 0.5;
-	}
-	roll_cmd_filtered = limit(roll_cmd_filtered, -1.0, 1.0);
+	//if (landing_FCS_mode == 1.0)
+	//{
+	//	roll_cmd_filtered *= 0.5;
+	//}
+	//else if (subsonic_FCS_mode == 1.0)
+	//{
+	//	roll_cmd_filtered *= 1;
+	//}
+	//else if (supersonic_FCS_mode == 1.0)
+	//{
+	//	roll_cmd_filtered *= 0.25;
+	//}
+	//else if (refueling_FCS_mode == 1.0)
+	//{
+	//	roll_cmd_filtered *= 0.5;
+	//}
+	//roll_cmd_filtered = limit(roll_cmd_filtered, -1.0, 1.0);
+	roll_cmd_filtered *= (200 * DEG_TO_RAD);
+	rollController.update(roll_cmd_filtered, m_state.m_omega.x, m_dt);
+	roll_cmd_filtered = rollController.getOutputPID() / (200 * DEG_TO_RAD);
 }
 
 void Flight_Control_System::limiter_mode()
@@ -263,76 +268,6 @@ void Flight_Control_System::autoDriveCanardPosition()
 		new_canard_anims = 0;
 	}
 }
-
-
-//Roll PID
-
-//void Flight_Control_System::PID_controller_roll(double target, double meassurement, double kp, double ki, double kd)
-//{
-//	//--------------PID------------------------
-//	double tau = 0;
-//
-//	roll_error = target - meassurement;
-//
-//	double proportional = kp * roll_error;
-//
-//	double integral = roll_integral_prior + 0.5 * ki * (roll_error + roll_error_prior);
-//
-//	// Add anti-windup clamp
-//	double integral_max = 100.0;  // example, tune based on actuator limits
-//	double integral_min = -100.0;
-//	integral = clamp(integral, integral_min, integral_max);
-//
-//
-//	double alpha = (2.0 * tau - m_dt) / (2.0 * tau + m_dt);
-//	double beta = (2.0 * kd) / (2.0 * tau + m_dt);
-//
-//	double derivative = alpha * roll_derivative_prior - beta * (meassurement - roll_meassurement_prior);
-//
-//	double value_out = proportional + integral + derivative;
-//
-//	roll_meassurement_prior = meassurement;
-//	roll_error_prior = pitch_error;
-//	roll_integral_prior = integral;
-//	roll_derivative_prior = derivative;
-//	//----------------END OF PID--------------------
-//	roll_pid_result = value_out;
-//}
-
-//Yaw PID
-
-//void Flight_Control_System::PID_controller_yaw(double target, double meassurement, double kp, double ki, double kd)
-//{
-//	//--------------PID------------------------
-//	double tau = 0;
-//
-//	yaw_error = target - meassurement;
-//
-//	double proportional = kp * yaw_error;
-//
-//	double integral = yaw_integral_prior + 0.5 * ki * (yaw_error + yaw_error_prior);
-//
-//	// Add anti-windup clamp
-//	double integral_max = 100.0;  // example, tune based on actuator limits
-//	double integral_min = -100.0;
-//	integral = clamp(integral, integral_min, integral_max);
-//
-//
-//	double alpha = (2.0 * tau - m_dt) / (2.0 * tau + m_dt);
-//	double beta = (2.0 * kd) / (2.0 * tau + m_dt);
-//
-//	double derivative = alpha * yaw_derivative_prior - beta * (meassurement - yaw_meassurement_prior);
-//
-//	double value_out = proportional + integral + derivative;
-//
-//	yaw_meassurement_prior = meassurement;
-//	yaw_error_prior = pitch_error;
-//	yaw_integral_prior = integral;
-//	yaw_derivative_prior = derivative;
-//	//----------------END OF PID--------------------
-//	roll_pid_result = value_out;
-//}
-
 //----------------------------------------------------
 
 void Flight_Control_System::update(double dt)

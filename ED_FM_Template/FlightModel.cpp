@@ -329,7 +329,7 @@ void FlightModel::L_stab()
 	//-----------Multiplikator vor Clda eingefügt auf 1.25 auf 1.5 für schnelleres Ansprechen auf der Rollachse-------------------------------
 	//----------m_stallIndRoll verringert auf (s.u.)-----------------------------------------------------------------------------------
 	//----------Multiplikator vor m_stallMult von 0.5 auf 0.33
-	m_moment.x += m_q * ((Clb_b * m_corrBeta) + ((1.5 * Clda_b) * (((m_fcs.getroll() * m_ailDeflection) + m_input.getTrimmAilR() - m_input.getTrimmAilL()) * m_ailDamage) + (m_lWingDamageCD + m_rWingDamageCD)) + ((0.55 * Cldr_b) * (m_input.getYaw() * m_rudDeflection)))
+	m_moment.x += m_q * ((Clb_b * m_corrBeta) + ((1.5 * Clda_b) * (((m_fcs.getroll() * m_ailDeflection) + m_input.getTrimmAilR() - m_input.getTrimmAilL()) * m_ailDamage) + (m_lWingDamageCD + m_rWingDamageCD)) + ((0.55 * Cldr_b) * (m_fcs.getyaw() * m_rudDeflection)))
 		+ 0.25 * m_state.m_airDensity * m_scalarVelocity * CON_A * CON_b * CON_b * ((1.35  * Clp_b) * m_state.m_omega.x + (1.15 * Clr_b) * m_state.m_omega.y);
 }
 

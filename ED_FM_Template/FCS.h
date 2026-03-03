@@ -25,9 +25,9 @@ public:
     void refueling_limit();
     //void low_speed_recovery();
     void autoDriveCanardPosition();
-    double PID_controller_pitch(double target, bool is_neg);
-    void PID_controller_roll(double target, double meassurement, double kp, double ki, double kd);
-    void PID_controller_yaw(double target, double meassurement, double kp, double ki, double kd);
+    //double PID_controller_pitch(double target, bool is_neg);
+    //void PID_controller_roll(double target, double meassurement, double kp, double ki, double kd);
+    //void PID_controller_yaw(double target, double meassurement, double kp, double ki, double kd);
     //double Flight_Control_System::Canard_AOA();
     double const Flight_Control_System::getpitch() const
     {
@@ -55,6 +55,7 @@ public:
     }
 
 	PID pitchController;
+    PID rollController;
 private:
     State& m_state;
     Input& m_input;
