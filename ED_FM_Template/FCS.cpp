@@ -59,7 +59,13 @@ void Flight_Control_System::limit_pitch()
 
 	//Hard limiter for G (Safety)
 
-	double scale_factor = (max_g + 5) / current_g;
+	double safe_current_g = current_g;
+	if (safe_current_g < 1e-3)
+	{
+		safe_current_g = 1e-3;
+	}
+
+	double scale_factor = (max_g + 5) / safe_current_g;
 	if (scale_factor < 1)
 	{
 		pitch_cmd_filtered *= limit(scale_factor, 0.0, 1.0);
@@ -73,8 +79,6 @@ void Flight_Control_System::limit_pitch()
 
 	// Assign pitch to a pitch range
 	//pitch_cmd_filtered *= max_g; OLD
-	bool is_neg = false;
-
 	//Run the pid
 	double target_g = pitch_cmd_filtered * 4;//(1 + pitch_cmd_filtered * 100 / 12.5);
 	pitchController.update(target_g, current_g, m_dt);
@@ -256,7 +260,7 @@ void Flight_Control_System::autoDriveCanardPosition()
 	// Move the canards to assist between 8 and 5 degrees
 	if (canard_position < 1 && m_state.m_aoa >(5 * DEG_TO_RAD))
 	{
-		new_canard_anims += transition_speed;
+		new_canard_anims = limit(new_canard_anims + transition_speed, 0.0, 1.0);
 	}
 	else if (canard_position >= 1 && m_state.m_aoa > (5 * DEG_TO_RAD))
 	{
@@ -264,7 +268,7 @@ void Flight_Control_System::autoDriveCanardPosition()
 	}
 	else if (canard_position >= 1 && m_state.m_aoa < (5 * DEG_TO_RAD))
 	{
-		new_canard_anims = transition_speed - new_canard_anims;
+		new_canard_anims = limit(new_canard_anims - transition_speed, 0.0, 1.0);
 	}
 	else if (canard_position <= 0 && m_state.m_aoa < (5 * DEG_TO_RAD))
 	{
@@ -275,6 +279,8 @@ void Flight_Control_System::autoDriveCanardPosition()
 
 void Flight_Control_System::update(double dt)
 {
+	m_dt = dt;
+
 	pitch_rate = m_state.m_omega.z;
 	roll_rate = m_state.m_omega.x; //convert to degrees for ease of use
 	current_g = m_state.getNY();
@@ -293,7 +299,6 @@ void Flight_Control_System::update(double dt)
 	limit_pitch();
 	//low_speed_recovery();
 	autoDriveCanardPosition();
-    m_dt = dt;
 
 }
 
