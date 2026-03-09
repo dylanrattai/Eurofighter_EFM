@@ -95,7 +95,7 @@ public:
 	inline double setChutePositionZ(double dt);
 
 	//Engine Nozzle
-	double setNozzlePosition(double dt); //verschoben nach Airframe CPP wegen der Größe
+	double setNozzlePosition(double dt); //verschoben nach Airframe CPP wegen der Grï¿½ï¿½e
 	double setNozzlePosition2(double dt);
 
 	//intern FC3 Cockpit-Stuff
@@ -244,8 +244,8 @@ public:
 	void CHforceMovementH(double dt);
 	void moveSightHorizontal();
 	void moveSightVertical();
-	//inline double getSightHorizontal();//vielleicht überflüssig
-	//inline double getSIghtVertical();//vielleicht überflüssig
+	//inline double getSightHorizontal();//vielleicht ï¿½berflï¿½ssig
+	//inline double getSIghtVertical();//vielleicht ï¿½berflï¿½ssig
 	*/
 
 	//-------Damage Indicators Aileron and Stabilizer-------------
@@ -491,6 +491,12 @@ public:
 
 	inline double getDamageElement(Damage element) const;
 
+	#ifdef UNIT_TEST
+		// Expose internal state for testing purposes
+		double getGearNPosition() const { return m_gearNPosition; } 
+		double getRefuelingDoorState() const { return m_refuelingDoorToggle; }
+	#endif
+
 private:
 	Vec3 m_moment;
 	Vec3 m_force;
@@ -563,7 +569,7 @@ private:
 	double m_brkChuteInd = 0.0;
 	bool m_chuteDeployed = false;
 
-	//bool m_chuteSlewingZ = false;//neu eingefügt zum Testenfür Rückkehr 0-Position
+	//bool m_chuteSlewingZ = false;//neu eingefï¿½gt zum Testenfï¿½r Rï¿½ckkehr 0-Position
 	//bool m_chuteSlewingY = false;
 	//int m_chuteTimeZPassed = 0;
 	//int m_chuteTimeYPassed = 0;
@@ -608,7 +614,7 @@ private:
 	double m_fuelThousand = 0.0;
 	double m_fuelDivide = 0.0;
 
-	//-----------Speedo-Meter in kn und Mach und Höhe-------------------------
+	//-----------Speedo-Meter in kn und Mach und Hï¿½he-------------------------
 	double m_vMetEAS = 0.0;
 	double m_vKnotsEAS = 0.0;
 	double m_vKnotsEASInd = 0.0;
@@ -701,7 +707,7 @@ private:
 
 	//---------------Actuators--------------------------------------
 
-	Actuator m_actuatorStab; //scheint nur zur optischen "Verschönerung" zu sein, aber egal
+	Actuator m_actuatorStab; //scheint nur zur optischen "Verschï¿½nerung" zu sein, aber egal
 	Actuator m_actuatorAil;
 	Actuator m_actuatorRud;
 	Actuator m_actuatorFlap;
@@ -766,7 +772,7 @@ double Airframe::setLEFlapsPosition(double dt)
 }
 
 
-/*void Airframe::setFlapsPosition(double position) //ALT aber insges. funktionstüchtig
+/*void Airframe::setFlapsPosition(double position) //ALT aber insges. funktionstï¿½chtig
 {
 	m_flapsPosition = position;
 }*/
@@ -834,7 +840,7 @@ double Airframe::setNoseWheelAngle(double dt)
 	return m_actuatorNosewheel.inputUpdate(input, dt);
 }
 
-//---------Neu für WeightOnWheels Sensor---------
+//---------Neu fï¿½r WeightOnWheels Sensor---------
 void Airframe::setWeightOnWheels(double x)
 {
 	m_weightOnWheels = x;
@@ -880,7 +886,7 @@ double Airframe::getGearNPosition() const
 	return m_gearNPosition;
 }
 
-// Neu eingefügt den Lampen-Kram zur directen Steuerung der FC-3 Cockpit-Args
+// Neu eingefï¿½gt den Lampen-Kram zur directen Steuerung der FC-3 Cockpit-Args
 double Airframe::getGearLLamp()
 {
 	if (m_input.getElectricSystem() == 1.0)

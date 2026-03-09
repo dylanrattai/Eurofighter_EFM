@@ -56,6 +56,24 @@ public:
 
 	PID pitchController;
     PID rollController;
+
+    #ifdef UNIT_TEST:
+    // Expose internal state for testing purposes
+    double getCurrentG() const { return current_g; }
+    double getCurrentAoA() const { return current_aoa; }
+    double getPitchCmdFiltered() const { return pitch_cmd_filtered; }
+    double getRollCmdFiltered() const { return roll_cmd_filtered; }
+    double getYawCmdFiltered() const { return yaw_cmd_filtered; }
+    double getMaxAoA() const { return max_AoA; }
+    double getMaxG() const { return max_g; }
+    double getMaxNegG() const { return max_neg_g; }
+    double getLimitedRollRate() const { return limited_roll_rate; }
+    double getCanardPosition() const { return canard_position; }
+    double getLandingFCSMode() const { return landing_FCS_mode; }
+    double getSupersonicFCSMode() const { return supersonic_FCS_mode; }
+    double getSubsonicFCSMode() const { return subsonic_FCS_mode; }
+    double getRefuelingFCSMode() const { return refueling_FCS_mode; }
+    #endif
 private:
     State& m_state;
     Input& m_input;

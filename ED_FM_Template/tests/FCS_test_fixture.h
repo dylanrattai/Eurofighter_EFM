@@ -1,15 +1,10 @@
 #pragma once
-
+#define UNIT_TEST
 #include <gtest/gtest.h>
-
-// Test-only visibility seam to allow deterministic Airframe state setup.
-#define private public
 #include "../FCS.h"
-#undef private
-
 #include "../Engine.h"
 
-struct StateStub : public State
+struct TestAircraftState : public State
 {
     void setMachNumber(double mach)
     {
@@ -33,7 +28,7 @@ struct StateStub : public State
     }
 };
 
-class InputStub : public Input
+class TestPilotInput : public Input
 {
 public:
     void setPitchCommand(double cmd)
@@ -52,22 +47,22 @@ public:
     }
 };
 
-class AirframeStub : public Airframe
+class TestAirframe : public Airframe
 {
 public:
-    AirframeStub(State& state, Input& input, Engine& engine)
+    TestAirframe(State& state, Input& input, Engine& engine)
         : Airframe(state, input, engine)
     {
     }
 
     void setGearNPositionForTest(double gear_n_position)
     {
-        m_gearNPosition = gear_n_position;
+        setGearNPosition(gear_n_position);
     }
 
     void setRefuelingDoorForTest(double refueling_door_state)
     {
-        m_refuelingDoorToggle = refueling_door_state;
+        setRefuelingDoor(refueling_door_state);
     }
 };
 
@@ -142,9 +137,9 @@ protected:
         fcs_.update(dt);
     }
 
-    StateStub state_;
-    InputStub input_;
+    TestAircraftState state_;
+    TestPilotInput input_;
     Engine engine_;
-    AirframeStub airframe_;
+    TestAirframe airframe_;
     Flight_Control_System fcs_;
 };
