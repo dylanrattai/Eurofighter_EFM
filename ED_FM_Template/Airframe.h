@@ -491,11 +491,10 @@ public:
 
 	inline double getDamageElement(Damage element) const;
 
-	#ifdef UNIT_TEST
-		// Expose internal state for testing purposes
-		double getGearNPosition() const { return m_gearNPosition; } 
-		double getRefuelingDoorState() const { return m_refuelingDoorToggle; }
-	#endif
+// for unit testing
+protected:
+	double getGearNPosition() const { return m_gearNPosition; } 
+	double getRefuelingDoorState() const { return m_refuelingDoorToggle; }
 
 private:
 	Vec3 m_moment;

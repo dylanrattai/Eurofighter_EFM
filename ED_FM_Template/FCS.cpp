@@ -3,26 +3,26 @@
 
 namespace
 {
-	constexpr double kMinSafeCurrentG = 1e-3;
-	constexpr double kPitchGLimiterBias = 5.0;
-	constexpr double kPitchCmdToTargetG = 4.0;
-	constexpr double kPitchAoaLimiterUpperBoundRad = 100.0;
+	constexpr double kMinSafeCurrentG { 1e-3 };
+	constexpr double kPitchGLimiterBias { 5.0 };
+	constexpr double kPitchCmdToTargetG { 4.0 };
+	constexpr double kPitchAoaLimiterUpperBoundRad { 100.0 };
 
-	constexpr double kRefuelingDoorOpenThreshold = 0.3;
-	constexpr double kNosewheelLandingDetectThreshold = 0.1;
-	constexpr double kSupersonicMachThreshold = 0.98;
+	constexpr double kRefuelingDoorOpenThreshold { 0.3 };
+	constexpr double kNosewheelLandingDetectThreshold { 0.1 };
+	constexpr double kSupersonicMachThreshold { 0.98 };
 
-	constexpr double kYawDampingAoaStartDeg = 10.0;
-	constexpr double kYawAuthorityLanding = 0.05;
-	constexpr double kYawAuthorityRefueling = 0.25;
-	constexpr double kYawAuthorityNominal = 0.5;
+	constexpr double kYawDampingAoaStartDeg { 10.0 };
+	constexpr double kYawAuthorityLanding { 0.05 };
+	constexpr double kYawAuthorityRefueling { 0.25 };
+	constexpr double kYawAuthorityNominal { 0.5 };
 
-	constexpr double kRollAuthorityLanding = 0.5;
-	constexpr double kRollAuthoritySupersonic = 0.25;
-	constexpr double kRollAuthorityRefueling = 0.5;
+	constexpr double kRollAuthorityLanding { 0.5 };
+	constexpr double kRollAuthoritySupersonic { 0.25 };
+	constexpr double kRollAuthorityRefueling { 0.5 };
 
-	constexpr double kCanardBlendAoaThresholdDeg = 5.0;
-	constexpr double kCanardTransitionTimeSeconds = 10.0;
+	constexpr double kCanardBlendAoaThresholdDeg { 5.0 };
+	constexpr double kCanardTransitionTimeSeconds { 10.0 };
 }
 
 Flight_Control_System::Flight_Control_System
@@ -38,6 +38,9 @@ Flight_Control_System::Flight_Control_System
 
 }
 
+/**
+ * @brief Initialize all internal values with a "zero" state.
+ */
 void Flight_Control_System::zeroInit()
 {
 	pitch_cmd_filtered = 0.0;
@@ -61,19 +64,34 @@ void Flight_Control_System::zeroInit()
 	rollController.initialize(3, 0, 0, -1.0, 1.0);
 
 }
+
+/**
+ * @brief Cold start initialization. Runs a zeroInit
+ */
 void Flight_Control_System::coldInit()
 {
 	zeroInit();
 }
+
+/**
+ * @brief Hot start initialization. Runs a zeroInit
+ */
 void Flight_Control_System::hotInit()
 {
     zeroInit();
 }
+
+/**
+ * @brief Airborne start initialization. Runs a zeroInit
+ */
 void Flight_Control_System::airborneInit()
 {
 	zeroInit();
 }
 
+/**
+ * @brief TODO: Document this function.
+ */
 // Applies stick-command limiting and computes the pitch PID setpoint.
 // Limits are based on current G and AoA envelope for the active FCS mode.
 void Flight_Control_System::limit_pitch()
@@ -84,14 +102,14 @@ void Flight_Control_System::limit_pitch()
 
 	// Hard G limiter. Prevent divide-by-zero and unstable gains around near-zero G.
 
-	double safe_current_g = current_g;
+	double safe_current_g { current_g };
 	if (safe_current_g < kMinSafeCurrentG)
 	{
 		safe_current_g = kMinSafeCurrentG;
 	}
 
 	// Reduce commanded pitch as configured G and AoA limits are approached.
-	double scale_factor = (max_g + kPitchGLimiterBias) / safe_current_g;
+	double scale_factor { (max_g + kPitchGLimiterBias) / safe_current_g };
 	if (scale_factor < 1)
 	{
 		pitch_cmd_filtered *= limit(scale_factor, 0.0, 1.0);
@@ -104,15 +122,18 @@ void Flight_Control_System::limit_pitch()
 	pitch_cmd_filtered = limit(pitch_cmd_filtered, -1.0, 1.0);
 
 	// Convert normalized pitch command to target normal-acceleration request.
-	double target_g = pitch_cmd_filtered * kPitchCmdToTargetG;
+	double target_g { pitch_cmd_filtered * kPitchCmdToTargetG };
 	pitchController.update(target_g, current_g, m_dt);
 	//pitch_cmd_filtered = pitchController.getOutputPID() / 4; Temporarly comment
 }
 
+/**
+ * @brief Takes in raw yaw input and applies limiting/damping based on active FCS mode and current AoA.
+ */
 void Flight_Control_System::limit_yaw()
 {
 	yaw_cmd_filtered = yawcmd;
-	const double yaw_damping_aoa_start = kYawDampingAoaStartDeg * DEG_TO_RAD;
+	const double yaw_damping_aoa_start { kYawDampingAoaStartDeg * DEG_TO_RAD };
 
 	if (landing_FCS_mode == 1.0)
 	{
@@ -130,7 +151,7 @@ void Flight_Control_System::limit_yaw()
 	// Additional damping at high AoA to reduce departure risk.
 	if (current_aoa > yaw_damping_aoa_start)
 	{
-		double scale_factor = yaw_damping_aoa_start / current_aoa;
+		double scale_factor { yaw_damping_aoa_start / current_aoa };
 		yaw_cmd_filtered *= scale_factor;
 	}
 }
@@ -149,6 +170,9 @@ void Flight_Control_System::limit_yaw()
 //	}
 //}
 
+/**
+ * @brief Takes in raw roll input and applies damping based on active FCS mode. Then runs the roll PID controller to compute the final roll command output.
+ */
 void Flight_Control_System::limit_roll()
 {
 	roll_cmd_filtered = rollcmd;
@@ -178,6 +202,11 @@ void Flight_Control_System::limit_roll()
 	rollController.debug();
 }
 
+/** 
+ * @brief Selects the active FCS mode based off aircraft state.
+ * 
+ * Priority: AAR law -> Landing law -> Supersonic law -> Subsonic law.
+*/
 void Flight_Control_System::limiter_mode()
 {
 	// Mode selection priority: refueling door -> landing gear state -> Mach regime.
@@ -218,6 +247,9 @@ void Flight_Control_System::limiter_mode()
 	}
 }
 
+/**
+ * @brief TODO: Document this function.
+ */
 void Flight_Control_System::subsonic_limit()
 {
 	// OLD Subsonic maneuvering envelope.
@@ -233,6 +265,9 @@ void Flight_Control_System::subsonic_limit()
 	min_current_pitch_rate = -2 * DEG_TO_RAD;
 }
 
+/**
+ * @brief TODO: Document this function.
+ */
 void Flight_Control_System::landing_limit()
 {
 	// OLD Landing envelope prioritizes controllability and low-rate authority.
@@ -248,6 +283,9 @@ void Flight_Control_System::landing_limit()
 	min_current_pitch_rate = -2 * DEG_TO_RAD;
 }
 
+/**
+ * @brief TODO: Document this function.
+ */
 void Flight_Control_System::supersonic_limit()
 {
 	// OLD Supersonic envelope limits pitch rate to control structural loads.
@@ -263,6 +301,9 @@ void Flight_Control_System::supersonic_limit()
 	min_current_pitch_rate = -2 * DEG_TO_RAD;
 }
 
+/**
+ * @brief TODO: Document this function.
+ */
 void Flight_Control_System::refueling_limit()
 {
 	// OLD Refueling envelope with reduced agility for station-keeping.
@@ -277,10 +318,13 @@ void Flight_Control_System::refueling_limit()
 	min_current_pitch_rate = -2 * DEG_TO_RAD;
 }
 
+/**
+ * @brief TODO: Document this function.
+ */
 void Flight_Control_System::autoDriveCanardPosition()
 {
-	const double canard_aoa_threshold = kCanardBlendAoaThresholdDeg * DEG_TO_RAD;
-	double transition_speed = m_dt / kCanardTransitionTimeSeconds;
+	const double canard_aoa_threshold { kCanardBlendAoaThresholdDeg * DEG_TO_RAD };
+	double transition_speed { m_dt / kCanardTransitionTimeSeconds };
 	canard_position = new_canard_anims;
 
 	// Blend canard animation in/out based on AoA threshold.

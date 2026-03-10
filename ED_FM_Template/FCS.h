@@ -57,8 +57,8 @@ public:
 	PID pitchController;
     PID rollController;
 
-    #ifdef UNIT_TEST:
-    // Expose internal state for testing purposes
+// for testing purposes, expose internal state of FCS modes and limits
+protected:
     double getCurrentG() const { return current_g; }
     double getCurrentAoA() const { return current_aoa; }
     double getPitchCmdFiltered() const { return pitch_cmd_filtered; }
@@ -73,7 +73,7 @@ public:
     double getSupersonicFCSMode() const { return supersonic_FCS_mode; }
     double getSubsonicFCSMode() const { return subsonic_FCS_mode; }
     double getRefuelingFCSMode() const { return refueling_FCS_mode; }
-    #endif
+
 private:
     State& m_state;
     Input& m_input;
