@@ -29,7 +29,8 @@ target_include_directories(FCS_tests PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/tests
 )
 
-target_link_libraries(FCS_tests PRIVATE
+target_link_libraries(
+    FCS_tests PRIVATE
     GTest::gtest
     GTest::gtest_main
 )

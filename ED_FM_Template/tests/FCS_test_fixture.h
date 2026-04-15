@@ -4,6 +4,23 @@
 #include "../FCS.h"
 #include "../Engine.h"
 
+class TestFCS : public Flight_Control_System
+{
+public:
+    using Flight_Control_System::Flight_Control_System;
+    using Flight_Control_System::getLandingFCSMode;
+    using Flight_Control_System::getSupersonicFCSMode;
+    using Flight_Control_System::getSubsonicFCSMode;
+    using Flight_Control_System::getRefuelingFCSMode;
+    using Flight_Control_System::getCurrentG;
+    using Flight_Control_System::getCurrentAoA;
+    using Flight_Control_System::getPitchCmdFiltered;
+    using Flight_Control_System::getRollCmdFiltered;
+    using Flight_Control_System::getYawCmdFiltered;
+    using Flight_Control_System::getMaxAoA;
+    using Flight_Control_System::getMaxG;
+};
+
 struct TestAircraftState : public State
 {
     void setMachNumber(double mach)
@@ -141,5 +158,5 @@ protected:
     TestPilotInput input_;
     Engine engine_;
     TestAirframe airframe_;
-    Flight_Control_System fcs_;
+    TestFCS fcs_;  // only change from Flight_Control_System -> TestFCS
 };
