@@ -73,6 +73,10 @@ protected:
     double getSupersonicFCSMode() const { return supersonic_FCS_mode; }
     double getSubsonicFCSMode() const { return subsonic_FCS_mode; }
     double getRefuelingFCSMode() const { return refueling_FCS_mode; }
+    double getMaxRollRate() const { return limited_roll_rate; }
+    double getMaxPitchRate() const { return max_current_pitch_rate; }
+    double getMaxNegativePitchRate() const { return min_current_pitch_rate; }
+    double getMaxNegativeG() const { return max_neg_g; }
 
 private:
     State& m_state;

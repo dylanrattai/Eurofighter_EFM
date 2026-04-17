@@ -248,7 +248,7 @@ void Flight_Control_System::limiter_mode()
 }
 
 /**
- * @brief TODO: Document this function.
+ * @brief Sets the limits for subsonic flight law
  */
 void Flight_Control_System::subsonic_limit()
 {
@@ -266,7 +266,7 @@ void Flight_Control_System::subsonic_limit()
 }
 
 /**
- * @brief TODO: Document this function.
+ * @brief Sets the limits for landing flight law
  */
 void Flight_Control_System::landing_limit()
 {
@@ -284,7 +284,7 @@ void Flight_Control_System::landing_limit()
 }
 
 /**
- * @brief TODO: Document this function.
+ * @brief Sets the limits for supersonic flight law
  */
 void Flight_Control_System::supersonic_limit()
 {
@@ -302,7 +302,7 @@ void Flight_Control_System::supersonic_limit()
 }
 
 /**
- * @brief TODO: Document this function.
+ * @brief Sets the limits for Air to Air Refueling flight law
  */
 void Flight_Control_System::refueling_limit()
 {

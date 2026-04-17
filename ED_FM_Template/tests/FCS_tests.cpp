@@ -353,4 +353,131 @@ namespace {
 
         EXPECT_DOUBLE_EQ(fcs_.getSubsonicFCSMode(), 0.0);
      }
+
+     /**
+      * @category Axis Limiter Tests
+      * @todo Tests for limit_roll
+     */
+
+    /**
+     * @todo Tests for limit_pitch
+     */
+
+    /**
+     * @todo Tests for limit_yaw
+     */
+
+    /**
+     * @category Canard Tests
+     * @todo Tests for autoDriveCanardPosition
+    */
+
+    /**
+     * @category FCS Mode Limit Tests
+    */
+
+    /**
+     * @brief Test that the correct limits are set for subsonic mode.
+    */
+    TEST_F(FCSTestFixture, SubsonicLimits) {
+        // Set conditions for subsonic mode: Mach < 0.99, gear retracted, refueling door closed
+        setMachNumber(0.5);
+        setGearNPosition(0.0);
+        setRefuelingDoorState(0.0);
+
+        // Step time so FCS updates
+        stepFcs(0.2);
+
+        // PITCH RATE LIMITS
+        EXPECT_DOUBLE_EQ(fcs_.getMaxPitchRate(), SUBSONIC_LIMITS.maxPositiveAoADeg * DEG_TO_RAD);
+        EXPECT_DOUBLE_EQ(fcs_.getMaxNegativePitchRate(), SUBSONIC_LIMITS.maxNegativeAoADeg * DEG_TO_RAD);
+
+        // G LIMITS
+        EXPECT_DOUBLE_EQ(fcs_.getMaxG(), SUBSONIC_LIMITS.maxPositiveG);
+        EXPECT_DOUBLE_EQ(fcs_.getMaxNegativeG(), SUBSONIC_LIMITS.maxNegativeG);
+
+        // AOA LIMIT
+        EXPECT_DOUBLE_EQ(fcs_.getMaxAoA(), SUBSONIC_LIMITS.maxPositiveAoADeg * DEG_TO_RAD);
+
+        // ROLL LIMIT
+        EXPECT_DOUBLE_EQ(fcs_.getMaxRollRate(), SUBSONIC_LIMITS.maxPositiveRollRateDegPerSec * DEG_TO_RAD);
+    }
+
+    /**
+     * @brief Test that the correct limits are set for landing mode.
+    */
+    TEST_F(FCSTestFixture, LandingLimits) {
+        // Set conditions for landing mode: gear extended, refueling door closed
+        setGearNPosition(1.0);
+        setRefuelingDoorState(0.0);
+
+        // Step time so FCS updates
+        stepFcs(0.2);
+
+        // PITCH RATE LIMITS
+        EXPECT_DOUBLE_EQ(fcs_.getMaxPitchRate(), LANDING_LIMITS.maxPositiveAoADeg * DEG_TO_RAD);
+        EXPECT_DOUBLE_EQ(fcs_.getMaxNegativePitchRate(), LANDING_LIMITS.maxNegativeAoADeg * DEG_TO_RAD);
+
+        // G LIMITS
+        EXPECT_DOUBLE_EQ(fcs_.getMaxG(), LANDING_LIMITS.maxPositiveG);
+        EXPECT_DOUBLE_EQ(fcs_.getMaxNegativeG(), LANDING_LIMITS.maxNegativeG);
+
+        // AOA LIMIT
+        EXPECT_DOUBLE_EQ(fcs_.getMaxAoA(), LANDING_LIMITS.maxPositiveAoADeg * DEG_TO_RAD);
+
+        // ROLL LIMIT
+        EXPECT_DOUBLE_EQ(fcs_.getMaxRollRate(), LANDING_LIMITS.maxPositiveRollRateDegPerSec * DEG_TO_RAD);
+    }
+
+    /**
+     * @brief Test that the correct limits are set for supersonic mode.
+    */
+    TEST_F(FCSTestFixture, SupersonicLimits) {
+        // Set conditions for supersonic mode: Mach > 0.99, gear retracted, refueling door closed
+        setMachNumber(1.5);
+        setGearNPosition(0.0);
+        setRefuelingDoorState(0.0);
+
+        // Step time so FCS updates
+        stepFcs(0.2);
+
+        // PITCH RATE LIMITS
+        EXPECT_DOUBLE_EQ(fcs_.getMaxPitchRate(), SUPERSONIC_LIMITS.maxPositiveAoADeg * DEG_TO_RAD);
+        EXPECT_DOUBLE_EQ(fcs_.getMaxNegativePitchRate(), SUPERSONIC_LIMITS.maxNegativeAoADeg * DEG_TO_RAD);
+
+        // G LIMITS
+        EXPECT_DOUBLE_EQ(fcs_.getMaxG(), SUPERSONIC_LIMITS.maxPositiveG);
+        EXPECT_DOUBLE_EQ(fcs_.getMaxNegativeG(), SUPERSONIC_LIMITS.maxNegativeG);
+
+        // AOA LIMIT
+        EXPECT_DOUBLE_EQ(fcs_.getMaxAoA(), SUPERSONIC_LIMITS.maxPositiveAoADeg * DEG_TO_RAD);
+
+        // ROLL LIMIT
+        EXPECT_DOUBLE_EQ(fcs_.getMaxRollRate(), SUPERSONIC_LIMITS.maxPositiveRollRateDegPerSec * DEG_TO_RAD);
+    }
+
+    /**
+     * @brief Test that the correct limits are set for refueling mode.
+    */
+    TEST_F(FCSTestFixture, RefuelingLimits) {
+        // Set conditions for refueling mode: refueling door open
+        setRefuelingDoorState(1.0);
+
+        // Step time so FCS updates
+        stepFcs(0.2);
+
+        // PITCH RATE LIMITS
+        EXPECT_DOUBLE_EQ(fcs_.getMaxPitchRate(), REFUELING_LIMITS.maxPositiveAoADeg * DEG_TO_RAD);
+        EXPECT_DOUBLE_EQ(fcs_.getMaxNegativePitchRate(), REFUELING_LIMITS.maxNegativeAoADeg * DEG_TO_RAD);
+
+        // G LIMITS
+        EXPECT_DOUBLE_EQ(fcs_.getMaxG(), REFUELING_LIMITS.maxPositiveG);
+        EXPECT_DOUBLE_EQ(fcs_.getMaxNegativeG(), REFUELING_LIMITS.maxNegativeG);
+
+        // AOA LIMIT
+        EXPECT_DOUBLE_EQ(fcs_.getMaxAoA(), REFUELING_LIMITS.maxPositiveAoADeg * DEG_TO_RAD);
+
+        // ROLL LIMIT
+        EXPECT_DOUBLE_EQ(fcs_.getMaxRollRate(), REFUELING_LIMITS.maxPositiveRollRateDegPerSec * DEG_TO_RAD);
+    }
 }

@@ -19,6 +19,10 @@ public:
     using Flight_Control_System::getYawCmdFiltered;
     using Flight_Control_System::getMaxAoA;
     using Flight_Control_System::getMaxG;
+    using Flight_Control_System::getMaxRollRate;
+    using Flight_Control_System::getMaxPitchRate;
+    using Flight_Control_System::getMaxNegativePitchRate;
+    using Flight_Control_System::getMaxNegativeG;
 };
 
 struct TestAircraftState : public State
