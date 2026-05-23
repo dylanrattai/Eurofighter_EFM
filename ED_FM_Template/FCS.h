@@ -66,10 +66,12 @@ protected:
 private:
     FcsLaw currentLaw = FcsLaw::SUBSONIC_LAW;
     PilotInput pilotInputRaw{};
+    PilotInput pilotInputPrev{};
     PilotInput pilotInputFiltered{};
     AircraftState currentAircraftState{};
     FcsLimits currentLimits{};
 
+    PilotInput filterPilotInput(const PilotInput& rawInput, PilotInput& prevFilteredInput);
     FcsLaw selectFcsLaw(const AircraftState& state);
     FcsLimits updateLimitsForLaw(const FcsLaw& law);
 

@@ -30,6 +30,8 @@ namespace {
         .maxYawRate = 0.0,
         .maxPitchRate = 0.0
     };
+
+    constexpr double maxPilotInputRate = 5; // units per second, TODO: tune this value based on feel and testing
 }
 
 Flight_Control_System::Flight_Control_System
@@ -84,6 +86,41 @@ void Flight_Control_System::hotInit()
 void Flight_Control_System::airborneInit()
 {
     zeroInit();
+}
+
+/**
+ * @brief Filter pilot input with global rate limiters, does not rate limit throttle. 
+ * 
+ * @attention this function updates the prevFilteredInput to be replaced by the calculated filtered input!!!
+ * 
+ * @param rawInput Struct containing raw pilot input values for the current frame.
+ * 
+ * @return PilotInput struct containing filtered pilot input values for the current frame.
+*/
+Flight_Control_System::PilotInput Flight_Control_System::filterPilotInput(const PilotInput& rawInput, PilotInput& prevFilteredInput)
+{
+    PilotInput filteredInput;
+    double maxDelta = maxPilotInputRate * m_dt;
+
+    // Lambda function to apply slew rate limiting to a single axis
+    auto slew = [maxDelta](double commandedInput, double prevFiltered) {
+        double delta = commandedInput - prevFiltered;
+        if(delta > maxDelta)
+            return prevFiltered + maxDelta;
+        else if(delta < -maxDelta)
+            return prevFiltered - maxDelta;
+        else
+            return commandedInput;
+    };
+
+    // Apply slew rate limiting to each axis
+    filteredInput.pitch = slew(rawInput.pitch, prevFilteredInput.pitch);
+    filteredInput.roll = slew(rawInput.roll, prevFilteredInput.roll);
+    filteredInput.yaw = slew(rawInput.yaw, prevFilteredInput.yaw);
+
+    prevFilteredInput = filteredInput; // Update previous filtered input for next frame
+
+    return filteredInput;
 }
 
 /**
@@ -145,30 +182,28 @@ void Flight_Control_System::update(double dt)
 {
     m_dt = dt;
 
-    pitchRate      = m_state.m_omega.z;
-    rollRate       = m_state.m_omega.x;
-    currentG       = m_state.getNY();
-    nosewheelAngle = m_airframe.getGearNPosition();
-    commandedPitch = m_input.getPitch();
-    commandedRoll  = m_input.getRoll();
-    commandedYaw   = m_input.getYaw();
-    //commandedThrottle1 = m_input.getThrottle();
-    //commandedThrottle2 = m_input.getThrottle2();
-    currentAoa  = m_state.m_aoa;
-    currentMach = m_state.m_mach;
-    //wingStall = m_flight_model.getWingstall();
-
-    // Update current aircraft state struct for use in mode selection and axis limiters.
+    // Update current aircraft state struct
     currentAircraftState = {
-        .g = currentG,
-        .aoa = currentAoa,
-        .mach = currentMach,
-        .pitchRate = pitchRate,
-        .rollRate = rollRate,
+        .g = m_state.getNY(),
+        .aoa = m_state.m_aoa,
+        .mach = m_state.m_mach,
+        .pitchRate = m_state.m_omega.z,
+        .rollRate = m_state.m_omega.x,
         .yawRate = m_state.m_omega.y,
-        .nosewheelAngle = nosewheelAngle,
+        .nosewheelAngle = m_airframe.getGearNPosition(),
         .refuelingDoorPose = m_airframe.getRefuelingDoor()
     };
+
+    // Update raw pilot input struct
+    pilotInputRaw = {
+        .pitch = m_input.getPitch(),
+        .roll = m_input.getRoll(),
+        .yaw = m_input.getYaw(),
+        .throttle1 = m_input.getThrottle(),
+        .throttle2 = m_input.getThrottle2()
+    };
+
+    pilotInputFiltered = filterPilotInput(pilotInputRaw, pilotInputPrev);
 
     // Decide active FCS mode based on current aircraft state; then update limits.
     currentLaw = selectFcsLaw(currentAircraftState);
