@@ -177,6 +177,18 @@ Flight_Control_System::FcsLimits Flight_Control_System::updateLimitsForLaw(const
     }
 }
 
+/**
+ * @brief Calculate the command yaw degree value based off pilot input and aircraft state. Includes beta zeroing fusing with pilot input command
+ * 
+ * @param filteredInput Struct containing filtered pilot input values for the current frame.
+ * @param aircraftState Struct containing current aircraft state values for the current frame.
+ * 
+ * @return Degree value for yaw, post processing
+*/
+double Flight_Control_System::calculateYawCommandDegree(const PilotInput& filteredInput, const AircraftState& aircraftState) {
+    return 0.0;
+}
+
 // Main per-frame FCS update. Order matters: mode selection -> axis limiters -> actuator helpers.
 void Flight_Control_System::update(double dt)
 {
@@ -203,9 +215,24 @@ void Flight_Control_System::update(double dt)
         .throttle2 = m_input.getThrottle2()
     };
 
+    // Filter pilot input with rate limiters to prevent abrupt changes in commanded values that can cause instability
     pilotInputFiltered = filterPilotInput(pilotInputRaw, pilotInputPrev);
 
-    // Decide active FCS mode based on current aircraft state; then update limits.
+    // Decide active FCS mode based on current aircraft state; then update limits
     currentLaw = selectFcsLaw(currentAircraftState);
     currentLimits = updateLimitsForLaw(currentLaw);
+
+    // Based on the currently selected law and filtered pilot input, calculate the appropriate commanded inputs
+    commandedYawDegree = calculateYawCommandDegree(pilotInputFiltered, currentAircraftState);
+    // TODO: pitch, roll
+
+    // Normalize/bound the filtered inputs in [-1, 1] using a smooth step equation to prevent over commanding, and to
+    // give the pilot a feeling of resistance near the limits (prevents abrupt control cutoff with no sense of where limits are)
+    // TODO: all
+
+    // Take the smooth step results and run those through the pid loops (yaw, pitch, roll) and damper (yaw)
+    // TODO: all
+
+    // Hard clamp the pid outputs to [-1, 1] in case it goes out of bounds, and send a warning if it exceeds the bounds
+    // TODO: all
 }

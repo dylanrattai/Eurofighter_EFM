@@ -71,9 +71,16 @@ private:
     AircraftState currentAircraftState{};
     FcsLimits currentLimits{};
 
+    double commandedYawDegree;
+    double commandedRollRate;
+    double commandedPitchRate;
+
     PilotInput filterPilotInput(const PilotInput& rawInput, PilotInput& prevFilteredInput);
     FcsLaw selectFcsLaw(const AircraftState& state);
     FcsLimits updateLimitsForLaw(const FcsLaw& law);
+    double calculateYawCommandDegree(const PilotInput& filteredInput, const AircraftState& aircraftState);
+    double calculateRollCommandRate(const PilotInput& filteredInput, const AircraftState& aircraftState);
+    double calculatePitchCommandRate(const PilotInput& filteredInput, const AircraftState& aircraftState);
 
     // ----- Class-scope physical constants -----
     static constexpr double DEG_TO_RAD        = 3.14159265358979323846 / 180.0;
