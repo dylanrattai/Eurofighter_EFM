@@ -72,6 +72,8 @@ protected:
     
 
 private:
+    friend class FCS_Testable;
+    
     FcsLaw currentLaw = FcsLaw::SUBSONIC_LAW;
     PilotInput pilotInputRaw{};
     PilotInput pilotInputPrev{};
