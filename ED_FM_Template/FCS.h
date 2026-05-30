@@ -79,14 +79,14 @@ private:
     AircraftState currentAircraftState{};
     FcsLimits currentLimits{};
 
-    double commandedYawDegree;
+    double commandedYaw;
     double commandedRollRate;
     double commandedPitchRate;
 
     PilotInput filterPilotInput(const PilotInput& rawInput, PilotInput& prevFilteredInput);
     FcsLaw selectFcsLaw(const AircraftState& state);
     FcsLimits updateLimitsForLaw(const FcsLaw& law);
-    double calculateYawCommandDegree(const PilotInput& filteredInput, const AircraftState& aircraftState);
+    double calculateYawCommand(const PilotInput& filteredInput, const AircraftState& aircraftState);
     double calculateRollCommandRate(const PilotInput& filteredInput, const AircraftState& aircraftState);
     double calculatePitchCommandRate(const PilotInput& filteredInput, const AircraftState& aircraftState);
     double filterBeta(const double& beta, const double& dt, const double& previousFilteredBeta);
@@ -107,7 +107,7 @@ private:
 
     double m_dt = 0.0;
 
-    double previousFilteredBata = 0.0;
+    double previousFilteredBeta = 0.0;
 
     // ----- Pilot inputs: raw stick commands -----
     double commandedPitch    = 0.0;

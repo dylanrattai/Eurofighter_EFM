@@ -1,5 +1,6 @@
 #include "Maths.h"
 #include "FCS.h"
+#include <algorithm>
 
 namespace {
     constexpr Flight_Control_System::FcsLimits subsonicLimits = {
@@ -37,7 +38,8 @@ namespace {
     };
 
     constexpr double maxPilotInputRate = 5; // units per second, TODO: tune this value based on feel and testing
-    constexpr double betaFilterN = 4;
+    constexpr double betaFilterN = 4; // filter time constant for the beta low pass filter used
+    constexpr double betaZeroingMaxAuthority = 0.3; // max units that beta zeroing can contribute to the final yaw command
 }
 
 Flight_Control_System::Flight_Control_System
@@ -193,35 +195,36 @@ Flight_Control_System::FcsLimits Flight_Control_System::updateLimitsForLaw(const
  * @return Filtered beta value to be used for beta zeroing in the yaw command calculation.
  */
 double Flight_Control_System::filterBeta(const double& beta, const double& dt, const double& previousFilteredBeta) {
-    double alpha = dt / (betaFilterN * dt);
+    double alpha = dt / (betaFilterN + dt);
     return alpha * beta + (1 - alpha) * previousFilteredBeta;
 }
 
 /**
- * @brief Calculate the command yaw degree value based off pilot input and aircraft state. Includes beta zeroing fusing with pilot input command
+ * @brief Calculate the command yaw units value based off pilot input and aircraft state. Includes beta zeroing fusing with pilot input command
  * 
  * @param filteredInput Struct containing filtered pilot input values for the current frame.
  * @param aircraftState Struct containing current aircraft state values for the current frame.
  * 
- * @return Degree value for yaw, post processing
+ * @return Unit value for yaw, post processing
 */
-double Flight_Control_System::calculateYawCommandDegree(const PilotInput& filteredInput, const AircraftState& aircraftState) {
+double Flight_Control_System::calculateYawCommand(const PilotInput& filteredInput, const AircraftState& aircraftState) {
     double betaZeroingCommand = 0.0;
 
     // calculate beta zeroing (automated sideslip correction). 
-    double filteredBeta = filterBeta(aircraftState.beta, m_dt, previousFilteredBata);
-    previousFilteredBata = filteredBeta;
+    double filteredBeta = filterBeta(aircraftState.beta, m_dt, previousFilteredBeta);
+    previousFilteredBeta = filteredBeta;
+    clamp(filteredBeta, -betaZeroingMaxAuthority, betaZeroingMaxAuthority);
 
     if (std::abs(filteredBeta) > 0.01) // sideslip deadzone
     {
         betaZeroingCommand = betaZeroPValues.kP * -filteredBeta;
     }
 
-    // calculate the yaw command degree for the pilots input
+    // calculate the yaw command for the pilots input
+    double pilotCommandedYaw = filteredInput.yaw; // TODO: add filter?
 
-    // calculate the final commanded yaw degree by fusing the beta zeroing with the pilot's filtered yaw input command
-
-    return 0.0;
+    // calculate the final commanded yaw by fusing the beta zeroing with the pilot's filtered yaw input command. clamp to units
+    return clamp((pilotCommandedYaw + betaZeroingCommand), -1.0, 1.0);
 }
 
 // Main per-frame FCS update. Order matters: mode selection -> axis limiters -> actuator helpers.
@@ -259,7 +262,7 @@ void Flight_Control_System::update(double dt)
     currentLimits = updateLimitsForLaw(currentLaw);
 
     // Based on the currently selected law and filtered pilot input, calculate the appropriate commanded inputs
-    commandedYawDegree = calculateYawCommandDegree(pilotInputFiltered, currentAircraftState);
+    commandedYaw = calculateYawCommand(pilotInputFiltered, currentAircraftState);
     // TODO: pitch, roll
 
     // Normalize/bound the filtered inputs in [-1, 1] using a smooth step equation to prevent over commanding, and to
