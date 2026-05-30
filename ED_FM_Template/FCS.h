@@ -80,15 +80,15 @@ private:
     FcsLimits currentLimits{};
 
     double commandedYaw;
-    double commandedRollRate;
-    double commandedPitchRate;
+    double commandedRoll;
+    double commandedPitch;
 
     PilotInput filterPilotInput(const PilotInput& rawInput, PilotInput& prevFilteredInput);
     FcsLaw selectFcsLaw(const AircraftState& state);
     FcsLimits updateLimitsForLaw(const FcsLaw& law);
-    double calculateYawCommand(const PilotInput& filteredInput, const AircraftState& aircraftState);
-    double calculateRollCommandRate(const PilotInput& filteredInput, const AircraftState& aircraftState);
-    double calculatePitchCommandRate(const PilotInput& filteredInput, const AircraftState& aircraftState);
+    double calculateYawCommand(const PilotInput& filteredInput, const AircraftState& aircraftState, const FcsLimits& limits);
+    double calculateRollCommand(const PilotInput& filteredInput, const AircraftState& aircraftState, const FcsLimits& limits);
+    double calculatePitchCommand(const PilotInput& filteredInput, const AircraftState& aircraftState, const FcsLimits& limits);
     double filterBeta(const double& beta, const double& dt, const double& previousFilteredBeta);
 
     // ----- Class-scope physical constants -----
@@ -108,29 +108,6 @@ private:
     double m_dt = 0.0;
 
     double previousFilteredBeta = 0.0;
-
-    // ----- Pilot inputs: raw stick commands -----
-    double commandedPitch    = 0.0;
-    double commandedRoll     = 0.0;
-    double commandedYaw      = 0.0;
-    double commandedThrottle1 = 0.0;
-    double commandedThrottle2 = 0.0;
-
-    // ----- Pilot inputs: post-limiter / post-PID -----
-    double filteredCommandedPitch     = 0.0;
-    double filteredCommandedRoll      = 0.0;
-    double filteredCommandedYaw       = 0.0;
-    double filteredCommandedThrottle1 = 0.0;
-    double filteredCommandedThrottle2 = 0.0;
-
-    // ----- Aircraft state snapshot (refreshed each update) -----
-    double currentG       = 1.0;
-    double currentAoa     = 0.0;
-    double previousAoa    = 0.0;
-    double currentMach    = 0.0;
-    double pitchRate      = 0.0;
-    double rollRate       = 0.0;
-    double nosewheelAngle = 0.0;
 
     // ----- Canard animation state -----
     double newCanardAnims = 0.0;

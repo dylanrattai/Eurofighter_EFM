@@ -36,6 +36,11 @@ namespace {
         .kI = 0.0,
         .kD = 0.0
     };
+    constexpr Flight_Control_System::PidValues rollRatePValues = {
+        .kP = 1.0,
+        .kI = 0.0,
+        .kD = 0.0
+    };
 
     constexpr double maxPilotInputRate = 5; // units per second, TODO: tune this value based on feel and testing
     constexpr double betaFilterN = 4; // filter time constant for the beta low pass filter used
@@ -59,17 +64,6 @@ Flight_Control_System::Flight_Control_System
  */
 void Flight_Control_System::zeroInit()
 {
-    filteredCommandedPitch = 0.0;
-    commandedPitch         = 0.0;
-    nosewheelAngle         = 0.0;
-    newCanardAnims         = 0.0;
-    canardPosition         = 0.0;
-    currentAoa             = 0.0;
-
-    //                         P  I  D
-    pitchController.initialize(1, 0, 0, -1.0, 1.0);
-    //                        P  I  D
-    rollController.initialize(3, 0, 0, -1.0, 1.0);
 }
 
 /**
@@ -204,10 +198,11 @@ double Flight_Control_System::filterBeta(const double& beta, const double& dt, c
  * 
  * @param filteredInput Struct containing filtered pilot input values for the current frame.
  * @param aircraftState Struct containing current aircraft state values for the current frame.
+ * @param limits Struct containing current axis limit values based on active FCS mode.
  * 
  * @return Unit value for yaw, post processing
 */
-double Flight_Control_System::calculateYawCommand(const PilotInput& filteredInput, const AircraftState& aircraftState) {
+double Flight_Control_System::calculateYawCommand(const PilotInput& filteredInput, const AircraftState& aircraftState, const FcsLimits& limits) {
     double betaZeroingCommand = 0.0;
 
     // calculate beta zeroing (automated sideslip correction). 
@@ -221,10 +216,40 @@ double Flight_Control_System::calculateYawCommand(const PilotInput& filteredInpu
     }
 
     // calculate the yaw command for the pilots input
-    double pilotCommandedYaw = filteredInput.yaw; // TODO: add filter?
+    double pilotCommandedYaw = filteredInput.yaw;
+
+    // clamp the commanded yaw to stay within the max yaw rate based off law and dt
+    pilotCommandedYaw = clamp(pilotCommandedYaw, -limits.maxYawRate * m_dt, limits.maxYawRate * m_dt);
 
     // calculate the final commanded yaw by fusing the beta zeroing with the pilot's filtered yaw input command. clamp to units
-    return clamp((pilotCommandedYaw + betaZeroingCommand), -1.0, 1.0);
+    return clamp(pilotCommandedYaw + betaZeroingCommand, -1.0, 1.0);
+}
+
+/**
+ * @brief Calculate the commanded roll rate value based off pilot input and aircraft state.
+ * 
+ * @param filteredInput Struct containing filtered pilot input values for the current frame.
+ * @param limits Struct containing current axis limit values based on active FCS mode.
+ * 
+ * @return Unit value for roll, post processing
+ */
+double Flight_Control_System::calculateRollCommand(const PilotInput& filteredInput, const AircraftState& aircraftState, const FcsLimits& limits) {
+    // scale roll rate
+    double goalRollRate = filteredInput.roll * limits.maxRollRate;
+
+    //rate damping using a P controller
+    double rollRateCorrection = rollRatePValues.kP * (goalRollRate - aircraftState.rollRate);
+
+    // combine scaled and correction and clamp to max roll rate based on law and dt
+    double commandedRollRate = goalRollRate + rollRateCorrection;
+    commandedRollRate = clamp(commandedRollRate, -limits.maxRollRate, limits.maxRollRate);
+
+    //return command normalized to units
+    return clamp(commandedRollRate / limits.maxRollRate, -1.0, 1.0);
+}
+
+double Flight_Control_System::calculatePitchCommand(const PilotInput& filteredInput, const AircraftState& aircraftState, const FcsLimits& limits) {
+    
 }
 
 // Main per-frame FCS update. Order matters: mode selection -> axis limiters -> actuator helpers.
@@ -262,8 +287,9 @@ void Flight_Control_System::update(double dt)
     currentLimits = updateLimitsForLaw(currentLaw);
 
     // Based on the currently selected law and filtered pilot input, calculate the appropriate commanded inputs
-    commandedYaw = calculateYawCommand(pilotInputFiltered, currentAircraftState);
-    // TODO: pitch, roll
+    commandedYaw = calculateYawCommand(pilotInputFiltered, currentAircraftState, currentLimits);
+    commandedPitch = calculatePitchCommand(pilotInputFiltered, currentAircraftState, currentLimits);
+    commandedRoll = calculateRollCommand(pilotInputFiltered, currentAircraftState, currentLimits);
 
     // Normalize/bound the filtered inputs in [-1, 1] using a smooth step equation to prevent over commanding, and to
     // give the pilot a feeling of resistance near the limits (prevents abrupt control cutoff with no sense of where limits are)
