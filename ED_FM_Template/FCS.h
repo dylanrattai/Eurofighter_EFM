@@ -33,6 +33,7 @@ public:
     {
         double g;
         double aoa;
+        double beta;
         double mach;
         double pitchRate;
         double rollRate;
@@ -81,6 +82,7 @@ private:
     double calculateYawCommandDegree(const PilotInput& filteredInput, const AircraftState& aircraftState);
     double calculateRollCommandRate(const PilotInput& filteredInput, const AircraftState& aircraftState);
     double calculatePitchCommandRate(const PilotInput& filteredInput, const AircraftState& aircraftState);
+    double filterBeta(const double& beta, const double& dt, const double& previousFilteredBeta);
 
     // ----- Class-scope physical constants -----
     static constexpr double DEG_TO_RAD        = 3.14159265358979323846 / 180.0;
@@ -97,6 +99,8 @@ private:
     Airframe& m_airframe;
 
     double m_dt = 0.0;
+
+    double previousFilteredBata = 0.0;
 
     // ----- Pilot inputs: raw stick commands -----
     double commandedPitch    = 0.0;

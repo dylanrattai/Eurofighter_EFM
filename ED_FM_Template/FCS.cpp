@@ -32,6 +32,7 @@ namespace {
     };
 
     constexpr double maxPilotInputRate = 5; // units per second, TODO: tune this value based on feel and testing
+    constexpr double betaFilterN = 4;
 }
 
 Flight_Control_System::Flight_Control_System
@@ -178,6 +179,20 @@ Flight_Control_System::FcsLimits Flight_Control_System::updateLimitsForLaw(const
 }
 
 /**
+ * @brief Filters the beta value with a simple low pass filter to be used for beta zeroing (sideslip correction).
+ * 
+ * @param beta Current raw beta value from state.
+ * @param dt Current frame delta time.
+ * @param previousFilteredBeta Previous frame filtered beta value.
+ * 
+ * @return Filtered beta value to be used for beta zeroing in the yaw command calculation.
+ */
+double Flight_Control_System::filterBeta(const double& beta, const double& dt, const double& previousFilteredBeta) {
+    double alpha = dt / (betaFilterN * dt);
+    return alpha * beta + (1 - alpha) * previousFilteredBeta;
+}
+
+/**
  * @brief Calculate the command yaw degree value based off pilot input and aircraft state. Includes beta zeroing fusing with pilot input command
  * 
  * @param filteredInput Struct containing filtered pilot input values for the current frame.
@@ -186,6 +201,13 @@ Flight_Control_System::FcsLimits Flight_Control_System::updateLimitsForLaw(const
  * @return Degree value for yaw, post processing
 */
 double Flight_Control_System::calculateYawCommandDegree(const PilotInput& filteredInput, const AircraftState& aircraftState) {
+    // calculate beta zeroing (automated sideslip correction). 
+    double filteredBeta = filterBeta(aircraftState.beta, m_dt, previousFilteredBata);
+
+    // calculate the yaw command degree for the pilots input
+
+    // calculate the final commanded yaw degree by fusing the beta zeroing with the pilot's filtered yaw input command
+
     return 0.0;
 }
 
@@ -198,6 +220,7 @@ void Flight_Control_System::update(double dt)
     currentAircraftState = {
         .g = m_state.getNY(),
         .aoa = m_state.m_aoa,
+        .beta = m_state.m_beta,
         .mach = m_state.m_mach,
         .pitchRate = m_state.m_omega.z,
         .rollRate = m_state.m_omega.x,
