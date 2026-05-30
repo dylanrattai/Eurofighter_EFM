@@ -279,6 +279,19 @@ double Flight_Control_System::calculatePitchCommand(const PilotInput& filteredIn
     return clamp(commandedPitchRate / limits.maxPitchRate, -1.0, 1.0);
 }
 
+/**
+ * @brief Smooth step function to give the pilot a feeling of resistance as they approach the limits, 
+ * instead of an abrupt cutoff at the limit.
+ * 
+ * @param x Input value to be smoothed, expected in the range [-1, 1]. Values outside this range will be clamped
+ * 
+ * @return Smoothed output value in the range [-1, 1]
+ */
+double smoothStep(const double& x) {
+    clamp(x, -1.0, 1.0);
+    return x * x * (3 - 2 * x);
+}
+
 // Main per-frame FCS update. Order matters: mode selection -> axis limiters -> actuator helpers.
 void Flight_Control_System::update(double dt)
 {
