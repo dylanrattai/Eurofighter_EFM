@@ -60,6 +60,13 @@ public:
         double maxPitchRate;
     };
 
+    struct PidValues
+    {
+        double kP;
+        double kI;
+        double kD;
+    };
+
 // For testing purposes, expose internal state of FCS modes and limits.
 protected:
     

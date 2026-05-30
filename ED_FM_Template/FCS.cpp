@@ -30,6 +30,11 @@ namespace {
         .maxYawRate = 0.0,
         .maxPitchRate = 0.0
     };
+    constexpr Flight_Control_System::PidValues betaZeroPValues = {
+        .kP = 1.0,
+        .kI = 0.0,
+        .kD = 0.0
+    };
 
     constexpr double maxPilotInputRate = 5; // units per second, TODO: tune this value based on feel and testing
     constexpr double betaFilterN = 4;
@@ -201,8 +206,16 @@ double Flight_Control_System::filterBeta(const double& beta, const double& dt, c
  * @return Degree value for yaw, post processing
 */
 double Flight_Control_System::calculateYawCommandDegree(const PilotInput& filteredInput, const AircraftState& aircraftState) {
+    double betaZeroingCommand = 0.0;
+
     // calculate beta zeroing (automated sideslip correction). 
     double filteredBeta = filterBeta(aircraftState.beta, m_dt, previousFilteredBata);
+    previousFilteredBata = filteredBeta;
+
+    if (std::abs(filteredBeta) > 0.01) // sideslip deadzone
+    {
+        betaZeroingCommand = betaZeroPValues.kP * -filteredBeta;
+    }
 
     // calculate the yaw command degree for the pilots input
 
