@@ -258,6 +258,15 @@ double Flight_Control_System::calculateRollCommand(const PilotInput& filteredInp
     return clamp(commandedRollRate / limits.maxRollRate, -1.0, 1.0);
 }
 
+/**
+ * @brief Calculate the commanded pitch rate value based off pilot input and aircraft state, with integrated pitch limiters for g load and aoa protection.
+ * 
+ * @param filteredInput Struct containing filtered pilot input values for the current frame.
+ * @param aircraftState Struct containing current aircraft state values for the current frame.
+ * @param limits Struct containing current axis limit values based on active FCS mode.
+ * 
+ * @return Unit value for pitch, post processing
+ */
 double Flight_Control_System::calculatePitchCommand(const PilotInput& filteredInput, const AircraftState& aircraftState, const FcsLimits& limits) {
     double goalPitchRate = filteredInput.pitch * limits.maxPitchRate;
 
