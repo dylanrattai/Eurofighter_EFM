@@ -58,6 +58,7 @@ public:
         double maxRollRate;
         double maxYawRate;
         double maxPitchRate;
+        double pitchAuthority;
     };
 
     struct PidValues
@@ -73,7 +74,7 @@ protected:
 
 private:
     friend class FCS_Testable;
-    
+
     FcsLaw currentLaw = FcsLaw::SUBSONIC_LAW;
     PilotInput pilotInputRaw{};
     PilotInput pilotInputPrev{};

@@ -41,6 +41,16 @@ namespace {
         .kI = 0.0,
         .kD = 0.0
     };
+    constexpr Flight_Control_System::PidValues pitchRatePValues = {
+        .kP = 1.0,
+        .kI = 0.0,
+        .kD = 0.0
+    };
+    constexpr Flight_Control_System::PidValues pitchLimiterPValues = {
+        .kP = 1.0,
+        .kI = 0.0,
+        .kD = 0.0
+    };
 
     constexpr double maxPilotInputRate = 5; // units per second, TODO: tune this value based on feel and testing
     constexpr double betaFilterN = 4; // filter time constant for the beta low pass filter used
@@ -249,7 +259,24 @@ double Flight_Control_System::calculateRollCommand(const PilotInput& filteredInp
 }
 
 double Flight_Control_System::calculatePitchCommand(const PilotInput& filteredInput, const AircraftState& aircraftState, const FcsLimits& limits) {
-    
+    double goalPitchRate = filteredInput.pitch * limits.maxPitchRate;
+
+    //rate damping using a P controller
+    double pitchRateCorrection = pitchRatePValues.kP * (goalPitchRate - aircraftState.pitchRate);
+
+    // g load protection
+    double pitchG = pitchLimiterPValues.kP * clamp(limits.maxG - aircraftState.g, -limits.pitchAuthority, 0);
+
+    // aoa protection
+    double pitchAoa = pitchLimiterPValues.kP * clamp(limits.maxAoa - aircraftState.aoa, -limits.pitchAuthority, 0);
+
+    // most limiting of g and aoa limiters wins
+    double pitchProtection = std::min(pitchG, pitchAoa);
+
+    // combine and clamp
+    double commandedPitchRate = goalPitchRate + pitchRateCorrection + pitchProtection;
+    commandedPitchRate = clamp(commandedPitchRate, -limits.maxPitchRate, limits.maxPitchRate);
+    return clamp(commandedPitchRate / limits.maxPitchRate, -1.0, 1.0);
 }
 
 // Main per-frame FCS update. Order matters: mode selection -> axis limiters -> actuator helpers.
