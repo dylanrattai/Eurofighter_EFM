@@ -95,7 +95,9 @@ private:
     double calculatePitchCommand(const PilotInput& filteredInput, const AircraftState& aircraftState, const FcsLimits& limits);
     double filterBeta(const double& beta, const double& dt, const double& previousFilteredBeta);
     double smoothStep(const double& x);
-    double pidLoopRoll(const double& rollCommand, const FcsLimits& limits);
+    double pidLoopRoll(const double& rollCommand, const AircraftState& aircraftState, const FcsLimits& limits);
+    double pidLoopPitch(const double& pitchCommand, const AircraftState& aircraftState, const FcsLimits& limits);
+    double damperLoopYaw(const double& yawCommand, const AircraftState& aircraftState, const FcsLimits& limits);
 
     // ----- Class-scope physical constants -----
     static constexpr double DEG_TO_RAD        = 3.14159265358979323846 / 180.0;

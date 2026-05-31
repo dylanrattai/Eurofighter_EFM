@@ -221,7 +221,7 @@ double Flight_Control_System::calculateYawCommand(const PilotInput& filteredInpu
     // calculate beta zeroing (automated sideslip correction). 
     double filteredBeta = filterBeta(aircraftState.beta, m_dt, previousFilteredBeta);
     previousFilteredBeta = filteredBeta;
-    clamp(filteredBeta, -betaZeroingMaxAuthority, betaZeroingMaxAuthority);
+    filteredBeta = clamp(filteredBeta, -betaZeroingMaxAuthority, betaZeroingMaxAuthority);
 
     if (std::abs(filteredBeta) > 0.01) // sideslip deadzone
     {
@@ -300,15 +300,26 @@ double Flight_Control_System::calculatePitchCommand(const PilotInput& filteredIn
  * @return Smoothed output value in the range [-1, 1]
  */
 double smoothStep(const double& x) {
-    clamp(x, -1.0, 1.0);
-    return clamp(x * x * (3 - 2 * x), -1.0, 1.0);
+    double cx = clamp(x, -1.0, 1.0);
+    return clamp(cx * cx * (3 - 2 * cx), -1.0, 1.0);
 }
 
-double Flight_Control_System::pidLoopRoll(const double& rollCommand, const FcsLimits& limits) {
+/**
+ * @brief run the roll command through a PID loop to calculate the final commanded roll output. clamps after
+ * 
+ * @param rollCommand The desired roll command calculated from pilot input and law limiters, expected in the range [-1, 1]
+ * @param aircraftState Struct containing current aircraft state values for the current frame.
+ * @param limits Struct containing current axis limit values based on active FCS mode.
+ */
+double Flight_Control_System::pidLoopRoll(const double& rollCommand, const AircraftState& aircraftState, const FcsLimits& limits) {
     PID rollPid;
+    // scale the roll command
+    double scaledRollCommand = rollCommand * limits.maxRollRate;
     rollPid.initialize(rollPidValues.kP, rollPidValues.kI, rollPidValues.kD, -limits.maxRollRate, limits.maxRollRate);
-    return rollPid.update(rollCommand, currentAircraftState.rollRate, m_dt, true);
+    rollPid.update(scaledRollCommand, aircraftState.rollRate, m_dt, true);
+    return clamp(rollPid.getOutputPID() / limits.maxRollRate, -1.0, 1.0);
 }
+
 
 // Main per-frame FCS update. Order matters: mode selection -> axis limiters -> actuator helpers.
 void Flight_Control_System::update(double dt)
@@ -321,9 +332,9 @@ void Flight_Control_System::update(double dt)
         .aoa = m_state.m_aoa,
         .beta = m_state.m_beta,
         .mach = m_state.m_mach,
-        .pitchRate = m_state.m_omega.z,
-        .rollRate = m_state.m_omega.x,
-        .yawRate = m_state.m_omega.y,
+        .pitchRate = m_state.m_omega.z * (180.0 / M_PI),
+        .rollRate = m_state.m_omega.x * (180.0 / M_PI),
+        .yawRate = m_state.m_omega.y * (180.0 / M_PI),
         .nosewheelAngle = m_airframe.getGearNPosition(),
         .refuelingDoorPose = m_airframe.getRefuelingDoor()
     };
@@ -356,7 +367,7 @@ void Flight_Control_System::update(double dt)
     commandedRoll = smoothStep(commandedRoll);
 
     // Take the smooth step results and run those through the pid loops (yaw, pitch, roll) and damper (yaw)
-    commandedRoll = pidLoopRoll(commandedRoll, currentLimits);
+    commandedRoll = pidLoopRoll(commandedRoll, currentAircraftState, currentLimits);
     // TODO: all
 
     // Hard clamp the pid outputs to [-1, 1] in case it goes out of bounds, and send a warning if it exceeds the bounds
