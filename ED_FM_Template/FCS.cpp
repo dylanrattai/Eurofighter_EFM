@@ -1,6 +1,4 @@
-#include "Maths.h"
 #include "FCS.h"
-#include <algorithm>
 
 namespace {
     constexpr Flight_Control_System::FcsLimits subsonicLimits = {
@@ -48,6 +46,11 @@ namespace {
     };
     constexpr Flight_Control_System::PidValues pitchLimiterPValues = {
         .kP = 1.0,
+        .kI = 0.0,
+        .kD = 0.0
+    };
+    constexpr Flight_Control_System::PidValues rollPidValues = {
+        .kP = 0.0,
         .kI = 0.0,
         .kD = 0.0
     };
@@ -298,7 +301,13 @@ double Flight_Control_System::calculatePitchCommand(const PilotInput& filteredIn
  */
 double smoothStep(const double& x) {
     clamp(x, -1.0, 1.0);
-    return x * x * (3 - 2 * x);
+    return clamp(x * x * (3 - 2 * x), -1.0, 1.0);
+}
+
+double Flight_Control_System::pidLoopRoll(const double& rollCommand, const FcsLimits& limits) {
+    PID rollPid;
+    rollPid.initialize(rollPidValues.kP, rollPidValues.kI, rollPidValues.kD, -limits.maxRollRate, limits.maxRollRate);
+    return rollPid.update(rollCommand, currentAircraftState.rollRate, m_dt, true);
 }
 
 // Main per-frame FCS update. Order matters: mode selection -> axis limiters -> actuator helpers.
@@ -342,9 +351,12 @@ void Flight_Control_System::update(double dt)
 
     // Normalize/bound the filtered inputs in [-1, 1] using a smooth step equation to prevent over commanding, and to
     // give the pilot a feeling of resistance near the limits (prevents abrupt control cutoff with no sense of where limits are)
-    // TODO: all
+    commandedYaw = smoothStep(commandedYaw);
+    commandedPitch = smoothStep(commandedPitch);
+    commandedRoll = smoothStep(commandedRoll);
 
     // Take the smooth step results and run those through the pid loops (yaw, pitch, roll) and damper (yaw)
+    commandedRoll = pidLoopRoll(commandedRoll, currentLimits);
     // TODO: all
 
     // Hard clamp the pid outputs to [-1, 1] in case it goes out of bounds, and send a warning if it exceeds the bounds
